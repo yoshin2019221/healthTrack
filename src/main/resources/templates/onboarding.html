@@ -27,29 +27,30 @@
             min-height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: center;
-            padding: 24px;
+            align-items: flex-start;
+            padding: 40px 24px;
             color: var(--text);
             position: relative;
-            overflow: hidden;
+            overflow-x: hidden;
+            overflow-y: auto;
         }
 
-        /* animated background orbs */
-        body::before, body::after {
-            content: '';
+        /* animated background orbs — fixed so they don't affect scroll height */
+        .orb {
             position: fixed;
             border-radius: 50%;
             filter: blur(80px);
             opacity: 0.18;
             pointer-events: none;
+            z-index: 0;
         }
-        body::before {
+        .orb1 {
             width: 500px; height: 500px;
             background: var(--accent);
             top: -120px; left: -120px;
             animation: drift 12s ease-in-out infinite alternate;
         }
-        body::after {
+        .orb2 {
             width: 400px; height: 400px;
             background: var(--accent2);
             bottom: -100px; right: -80px;
@@ -353,6 +354,8 @@
     </style>
 </head>
 <body>
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
     <div class="card">
         <div class="logo">
             <div class="logo-icon">⚡</div>
