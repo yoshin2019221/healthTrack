@@ -1,0 +1,2291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthTrack Global - AI Calorie Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .panel {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .panel h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        /* Daily Summary */
+        .summary-stat {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .summary-stat label {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .summary-stat span {
+            font-size: 1.3em;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .macro-bar {
+            width: 100%;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 10px;
+            display: flex;
+        }
+
+        .macro-segment {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.85em;
+        }
+
+        .macro-protein { background: #ff6b6b; }
+        .macro-carbs { background: #4ecdc4; }
+        .macro-fat { background: #ffa502; }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4caf50, #45a049);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            font-size: 0.9em;
+            color: #666;
+            text-align: center;
+        }
+
+        /* Input Section */
+        .input-section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .voice-button {
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            cursor: pointer;
+            font-size: 2em;
+            transition: transform 0.2s, box-shadow 0.2s;
+            align-self: center;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .voice-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        }
+
+        .voice-button.listening {
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .voice-status {
+            text-align: center;
+            font-size: 0.9em;
+            color: #666;
+            min-height: 20px;
+        }
+
+        .voice-status.active {
+            color: #4caf50;
+            font-weight: bold;
+        }
+
+        .voice-status.error {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+
+        .input-box {
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-box input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.2s;
+        }
+
+        .input-box input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .input-box button {
+            padding: 12px 20px;
+            background: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .input-box button:hover {
+            background: #45a049;
+        }
+
+        /* Suggestions */
+        .suggestions-container {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+
+        .suggestion-item {
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .suggestion-item:hover {
+            background: #efefef;
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .suggestion-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .suggestion-nutrition {
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        /* Parsed Foods */
+        .parsed-foods {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .food-item {
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            background: white;
+        }
+
+        .food-item.complete {
+            border-color: #4caf50;
+            background: #f1f8f4;
+        }
+
+        .food-item.incomplete {
+            border-color: #ff6b6b;
+            background: #fff4f4;
+        }
+
+        .food-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .food-item-name {
+            font-weight: 600;
+            font-size: 1.1em;
+            color: #333;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .food-status {
+            font-size: 0.9em;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .food-status.complete {
+            background: #4caf50;
+            color: white;
+        }
+
+        .food-status.incomplete {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .food-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .input-group input,
+        .input-group select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.95em;
+        }
+
+        .food-nutrition {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .nutrition-values {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .add-all-button {
+            width: 100%;
+            padding: 12px;
+            background: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 15px;
+        }
+
+        .add-all-button:hover {
+            background: #45a049;
+        }
+
+        .add-all-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* Preferences */
+        .preferences-section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .preference-label {
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95em;
+        }
+
+        .preference-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .chip {
+            padding: 8px 16px;
+            background: #f0f0f0;
+            border: 2px solid #ddd;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+            font-size: 0.9em;
+        }
+
+        .chip:hover {
+            border-color: #667eea;
+            background: #f8f8ff;
+        }
+
+        .chip.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .ingredient-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.95em;
+            font-family: inherit;
+        }
+
+        .ingredient-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        /* Diet Status */
+        .diet-status-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .status-option {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .status-option:hover {
+            border-color: #667eea;
+            background: #f8f8ff;
+        }
+
+        .status-option.selected {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+
+        .status-emoji {
+            font-size: 1.2em;
+            margin-right: 10px;
+        }
+
+        /* Meal Log */
+        .meal-log-container {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .meal-log-container h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .meal-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .meal-details {
+            flex: 1;
+        }
+
+        .meal-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .meal-portion {
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .meal-nutrition {
+            font-size: 0.9em;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .meal-time {
+            font-size: 0.85em;
+            color: #999;
+            margin-right: 15px;
+        }
+
+        .delete-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .delete-btn:hover {
+            background: #ee5a52;
+        }
+
+        .edit-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.2s;
+            height: 32px;
+            width: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .edit-btn:hover {
+            background: #5568d3;
+            transform: scale(1.1);
+        }
+
+        .remove-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.2s;
+            height: 32px;
+            width: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .remove-btn:hover {
+            background: #ff5252;
+            transform: scale(1.1);
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        /* Suggestions Panel */
+        .suggestions-panel h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .suggested-meal {
+            padding: 12px;
+            background: #f0f7ff;
+            border-left: 4px solid #667eea;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .suggested-meal:hover {
+            background: #e8f1ff;
+            transform: translateX(5px);
+        }
+
+        .suggested-meal-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .suggested-meal-nutrition {
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        /* Error Messages */
+        .error-message {
+            background: #ffe0e0;
+            color: #c33;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            border-left: 4px solid #ff6b6b;
+        }
+
+        .success-message {
+            background: #e0ffe0;
+            color: #060;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            border-left: 4px solid #4caf50;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            header h1 {
+                font-size: 2em;
+            }
+
+            .nutrition-values {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .panel {
+                padding: 15px;
+            }
+
+            .voice-button {
+                width: 70px;
+                height: 70px;
+                font-size: 1.5em;
+            }
+
+            .food-inputs {
+                grid-template-columns: 1fr;
+            }
+
+            .meal-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .meal-time {
+                margin-right: 0;
+                margin-top: 10px;
+            }
+
+            header h1 {
+                font-size: 1.5em;
+            }
+        }
+
+        .api-key-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .api-key-section h3 {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .api-key-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .api-key-input-group input {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95em;
+            font-family: monospace;
+        }
+
+        .api-key-input-group button {
+            padding: 12px 20px;
+            background: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .api-key-input-group button:hover {
+            background: #45a049;
+            transform: scale(1.05);
+        }
+
+        .api-status {
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .api-status.connected {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+            border: 1px solid #4caf50;
+        }
+
+        .api-status.disconnected {
+            background: rgba(255, 107, 107, 0.2);
+            color: #ff6b6b;
+            border: 1px solid #ff6b6b;
+        }
+
+        .api-info {
+            font-size: 0.85em;
+            opacity: 0.9;
+            margin-top: 10px;
+            line-height: 1.5;
+        }
+
+        .ai-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            font-size: 0.8em;
+        }
+
+        .ai-indicator.active::before {
+            content: '●';
+            color: #4caf50;
+            font-size: 1.2em;
+            animation: blink 1.5s infinite;
+        }
+
+        .ai-indicator.inactive::before {
+            content: '○';
+            color: #ff9800;
+            font-size: 1.2em;
+        }
+
+        @keyframes blink {
+            0%, 50%, 100% { opacity: 1; }
+            25%, 75% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🍎 HealthTrack Global</h1>
+            <p>AI-Powered Voice-Enabled Nutrition Tracker</p>
+        </header>
+
+        <!-- API Key Setup -->
+        <div class="api-key-section">
+            <h3>
+                🔑 OpenAI API Configuration
+                <div class="ai-indicator" id="apiIndicator">Offline Mode</div>
+            </h3>
+            
+            <div class="api-key-input-group">
+                <input 
+                    type="password" 
+                    id="apiKeyInput" 
+                    placeholder="sk-..." 
+                    value=""
+                    style="letter-spacing: 2px;"
+                >
+                <button onclick="app.setApiKey()">Connect</button>
+                <button onclick="app.toggleApiKeyVisibility()" style="background: #2196F3;">👁️</button>
+                <button onclick="app.clearApiKey()" style="background: #ff6b6b;">Clear</button>
+            </div>
+
+            <div class="api-status disconnected" id="apiStatus">
+                ⚠️ Not Connected - Using Local Database
+            </div>
+
+            <div class="api-info">
+                ℹ️ Enter your OpenAI API key to enable AI-powered suggestions and intelligent meal parsing. 
+                <a href="https://platform.openai.com/api-keys" target="_blank" style="color: white; text-decoration: underline;">Get your API key</a>.
+                Your key is stored locally and never sent to any server except OpenAI.
+            </div>
+        </div>
+
+        <!-- Daily Summary & Input -->
+        <div class="main-grid">
+            <!-- Left: Input & Suggestions -->
+            <div class="panel">
+                <h2>📝 Log Your Meal</h2>
+                
+                <div class="input-section">
+                    <div style="text-align: center;">
+                        <button class="voice-button" id="voiceBtn" title="Click to speak">🎤</button>
+                        <div class="voice-status" id="voiceStatus"></div>
+                    </div>
+
+                    <div style="text-align: center; color: #999; font-size: 0.9em;">
+                        or
+                    </div>
+
+                    <div class="input-box">
+                        <input type="text" id="textInput" placeholder="Type: chicken biryani, 2 rotis, salad..." autocomplete="off">
+                        <button onclick="app.handleTextInput()">Add</button>
+                    </div>
+
+                    <div id="suggestionsContainer" class="suggestions-container" style="display: none;"></div>
+
+                    <div id="parsedFoodsContainer"></div>
+                </div>
+            </div>
+
+            <!-- Right: Daily Summary -->
+            <div class="panel">
+                <h2>📊 Today's Progress</h2>
+                
+                <div class="summary-stat">
+                    <label>Total Calories</label>
+                    <span id="totalCalories">0</span> / <span id="calorieGoal">2000</span>
+                </div>
+
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-text" id="progressText">0% of daily goal</div>
+
+                <hr style="margin: 15px 0; border: none; border-top: 1px solid #ddd;">
+
+                <div class="summary-stat">
+                    <label>Protein</label>
+                    <span id="totalProtein">0g</span>
+                </div>
+                <div class="summary-stat">
+                    <label>Carbs</label>
+                    <span id="totalCarbs">0g</span>
+                </div>
+                <div class="summary-stat">
+                    <label>Fat</label>
+                    <span id="totalFat">0g</span>
+                </div>
+
+                <hr style="margin: 15px 0; border: none; border-top: 1px solid #ddd;">
+
+                <div>
+                    <label style="display: block; font-weight: 600; margin-bottom: 10px; color: #555;">Daily Goal (cal):</label>
+                    <input type="number" id="dailyGoal" value="2000" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;" min="1000" max="5000" onchange="app.updateGoal()">
+                </div>
+            </div>
+        </div>
+
+        <!-- Preferences & Suggestions -->
+        <div class="main-grid">
+            <!-- Left: Preferences -->
+            <div class="panel">
+                <h2>⚙️ Preferences</h2>
+
+                <div class="preferences-section">
+                    <div>
+                        <div class="preference-label">Food Preference:</div>
+                        <div class="preference-chips">
+                            <div class="chip" data-pref="all" onclick="app.togglePreference('preference', 'all')">All Foods</div>
+                            <div class="chip" data-pref="vegetarian" onclick="app.togglePreference('preference', 'vegetarian')">🥬 Vegetarian</div>
+                            <div class="chip" data-pref="vegan" onclick="app.togglePreference('preference', 'vegan')">🌱 Vegan</div>
+                            <div class="chip" data-pref="highprotein" onclick="app.togglePreference('preference', 'highprotein')">💪 High Protein</div>
+                            <div class="chip" data-pref="lowcarb" onclick="app.togglePreference('preference', 'lowcarb')">📉 Low Carb</div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="preference-label">Diet Status:</div>
+                        <div class="diet-status-options">
+                            <div class="status-option" onclick="app.setDietStatus('ontrack')">
+                                <span class="status-emoji">✅</span>On Track
+                            </div>
+                            <div class="status-option" onclick="app.setDietStatus('junkfood')">
+                                <span class="status-emoji">⚠️</span>Too Much Junk Food
+                            </div>
+                            <div class="status-option" onclick="app.setDietStatus('needprotein')">
+                                <span class="status-emoji">📉</span>Need More Protein
+                            </div>
+                            <div class="status-option" onclick="app.setDietStatus('undereating')">
+                                <span class="status-emoji">💤</span>Undereating
+                            </div>
+                            <div class="status-option" onclick="app.setDietStatus('toolate')">
+                                <span class="status-emoji">😴</span>Too Heavy/Late
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="preference-label">Home Ingredients:</div>
+                        <textarea class="ingredient-input" id="ingredientsInput" rows="4" placeholder="List available ingredients separated by commas&#10;E.g., Chicken, Rice, Tomato, Onion, Spinach" onchange="app.updateIngredients()"></textarea>
+                        <div style="font-size: 0.8em; color: #999; margin-top: 5px;">ℹ️ When AI is enabled, it uses these ingredients for smarter suggestions</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Smart Suggestions -->
+            <div class="panel">
+                <h2>💡 Smart Suggestions</h2>
+                <div class="suggestions-panel" id="suggestionsPanel"></div>
+            </div>
+        </div>
+
+        <!-- Meal Log -->
+        <div class="meal-log-container">
+            <h2>📋 Today's Meal Log</h2>
+            <div id="mealLog"></div>
+        </div>
+    </div>
+
+    <script>
+        // Food Database with 350+ global foods
+        const FOOD_DATABASE = {
+            // GRAINS & CARBS
+            rice_white: { name: 'White Rice', cal: 130, protein: 2.7, carbs: 28, fat: 0.3, baseUnit: 'g', baseAmount: 100 },
+            rice_brown: { name: 'Brown Rice', cal: 111, protein: 2.6, carbs: 23, fat: 0.9, baseUnit: 'g', baseAmount: 100 },
+            rice_basmati: { name: 'Basmati Rice', cal: 130, protein: 2.7, carbs: 28, fat: 0.3, baseUnit: 'g', baseAmount: 100 },
+            rice_jasmine: { name: 'Jasmine Rice', cal: 130, protein: 2.7, carbs: 28, fat: 0.3, baseUnit: 'g', baseAmount: 100 },
+            rice_sushi: { name: 'Sushi Rice', cal: 140, protein: 2.7, carbs: 32, fat: 0.3, baseUnit: 'g', baseAmount: 100 },
+            noodles_egg: { name: 'Egg Noodles', cal: 138, protein: 5, carbs: 26, fat: 1.1, baseUnit: 'g', baseAmount: 100 },
+            noodles_ramen: { name: 'Ramen Noodles', cal: 137, protein: 4, carbs: 26, fat: 1, baseUnit: 'g', baseAmount: 100 },
+            noodles_chow_mein: { name: 'Chow Mein', cal: 187, protein: 5, carbs: 24, fat: 9, baseUnit: 'g', baseAmount: 100 },
+            noodles_pad_thai: { name: 'Pad Thai', cal: 370, protein: 10, carbs: 40, fat: 18, baseUnit: 'plate', baseAmount: 1 },
+            roti: { name: 'Roti', cal: 250, protein: 7, carbs: 45, fat: 3, baseUnit: 'piece', baseAmount: 1 },
+            naan: { name: 'Naan', cal: 262, protein: 8, carbs: 45, fat: 3, baseUnit: 'piece', baseAmount: 1 },
+            chapati: { name: 'Chapati', cal: 206, protein: 6, carbs: 37, fat: 2, baseUnit: 'piece', baseAmount: 1 },
+            bread_white: { name: 'White Bread', cal: 79, protein: 2.7, carbs: 14, fat: 1, baseUnit: 'slice', baseAmount: 1 },
+            bread_wheat: { name: 'Wheat Bread', cal: 81, protein: 4, carbs: 14, fat: 1, baseUnit: 'slice', baseAmount: 1 },
+            toast: { name: 'Toast', cal: 79, protein: 2.7, carbs: 14, fat: 1, baseUnit: 'slice', baseAmount: 1 },
+            pita: { name: 'Pita Bread', cal: 165, protein: 5, carbs: 33, fat: 1, baseUnit: 'piece', baseAmount: 1 },
+            pasta_spaghetti: { name: 'Spaghetti', cal: 131, protein: 5, carbs: 25, fat: 1, baseUnit: 'g', baseAmount: 100 },
+            pasta_penne: { name: 'Penne', cal: 131, protein: 5, carbs: 25, fat: 1, baseUnit: 'g', baseAmount: 100 },
+            pasta_lasagna: { name: 'Lasagna', cal: 131, protein: 5, carbs: 25, fat: 1, baseUnit: 'g', baseAmount: 100 },
+            oatmeal: { name: 'Oatmeal', cal: 150, protein: 5, carbs: 27, fat: 3, baseUnit: 'cup', baseAmount: 1 },
+            cereal: { name: 'Cereal', cal: 120, protein: 3, carbs: 25, fat: 1, baseUnit: 'cup', baseAmount: 1 },
+            pancake: { name: 'Pancake', cal: 58, protein: 2, carbs: 11, fat: 0.5, baseUnit: 'piece', baseAmount: 1 },
+            waffle: { name: 'Waffle', cal: 110, protein: 4, carbs: 15, fat: 4, baseUnit: 'piece', baseAmount: 1 },
+            
+            // PROTEINS - Poultry
+            chicken_breast: { name: 'Chicken Breast', cal: 165, protein: 31, carbs: 0, fat: 3.6, baseUnit: 'g', baseAmount: 100 },
+            chicken_thigh: { name: 'Chicken Thigh', cal: 209, protein: 26, carbs: 0, fat: 11, baseUnit: 'g', baseAmount: 100 },
+            chicken_fried: { name: 'Fried Chicken', cal: 235, protein: 23, carbs: 8, fat: 14, baseUnit: 'g', baseAmount: 100 },
+            turkey_breast: { name: 'Turkey Breast', cal: 135, protein: 30, carbs: 0, fat: 0.5, baseUnit: 'g', baseAmount: 100 },
+            duck: { name: 'Duck', cal: 337, protein: 19, carbs: 0, fat: 29, baseUnit: 'g', baseAmount: 100 },
+            
+            // PROTEINS - Seafood
+            salmon: { name: 'Salmon', cal: 208, protein: 20, carbs: 0, fat: 13, baseUnit: 'g', baseAmount: 100 },
+            tuna: { name: 'Tuna', cal: 144, protein: 30, carbs: 0, fat: 1, baseUnit: 'g', baseAmount: 100 },
+            fish_white: { name: 'White Fish', cal: 82, protein: 18, carbs: 0, fat: 0.7, baseUnit: 'g', baseAmount: 100 },
+            shrimp: { name: 'Shrimp', cal: 99, protein: 24, carbs: 0, fat: 0.3, baseUnit: 'g', baseAmount: 100 },
+            crab: { name: 'Crab', cal: 102, protein: 20, carbs: 0, fat: 1.1, baseUnit: 'g', baseAmount: 100 },
+            
+            // PROTEINS - Meat
+            beef_steak: { name: 'Beef Steak', cal: 271, protein: 26, carbs: 0, fat: 18, baseUnit: 'g', baseAmount: 100 },
+            beef_ground: { name: 'Ground Beef', cal: 250, protein: 26, carbs: 0, fat: 17, baseUnit: 'g', baseAmount: 100 },
+            pork: { name: 'Pork', cal: 242, protein: 27, carbs: 0, fat: 14, baseUnit: 'g', baseAmount: 100 },
+            lamb: { name: 'Lamb', cal: 294, protein: 25, carbs: 0, fat: 21, baseUnit: 'g', baseAmount: 100 },
+            
+            // PROTEINS - Plant-based & Dairy
+            tofu: { name: 'Tofu', cal: 76, protein: 8, carbs: 1.9, fat: 4.8, baseUnit: 'g', baseAmount: 100 },
+            paneer: { name: 'Paneer', cal: 265, protein: 25, carbs: 1.2, fat: 20, baseUnit: 'g', baseAmount: 100 },
+            egg: { name: 'Egg', cal: 155, protein: 13, carbs: 1.1, fat: 11, baseUnit: 'piece', baseAmount: 1 },
+            milk: { name: 'Milk', cal: 61, protein: 3.2, carbs: 4.8, fat: 3.3, baseUnit: 'cup', baseAmount: 1 },
+            yogurt: { name: 'Yogurt', cal: 59, protein: 10, carbs: 3.5, fat: 0.4, baseUnit: 'cup', baseAmount: 1 },
+            cheese: { name: 'Cheese', cal: 402, protein: 25, carbs: 1.3, fat: 33, baseUnit: 'g', baseAmount: 100 },
+            
+            // VEGETABLES
+            tomato: { name: 'Tomato', cal: 18, protein: 0.9, carbs: 3.9, fat: 0.2, baseUnit: 'g', baseAmount: 100 },
+            cucumber: { name: 'Cucumber', cal: 16, protein: 0.7, carbs: 3.6, fat: 0.1, baseUnit: 'g', baseAmount: 100 },
+            spinach: { name: 'Spinach', cal: 23, protein: 2.9, carbs: 3.6, fat: 0.4, baseUnit: 'g', baseAmount: 100 },
+            broccoli: { name: 'Broccoli', cal: 34, protein: 2.8, carbs: 7, fat: 0.4, baseUnit: 'g', baseAmount: 100 },
+            carrot: { name: 'Carrot', cal: 41, protein: 0.9, carbs: 10, fat: 0.2, baseUnit: 'g', baseAmount: 100 },
+            onion: { name: 'Onion', cal: 40, protein: 1.1, carbs: 9, fat: 0.1, baseUnit: 'g', baseAmount: 100 },
+            garlic: { name: 'Garlic', cal: 149, protein: 6.4, carbs: 33, fat: 0.5, baseUnit: 'g', baseAmount: 100 },
+            potato: { name: 'Potato', cal: 77, protein: 2, carbs: 17, fat: 0.1, baseUnit: 'g', baseAmount: 100 },
+            sweet_potato: { name: 'Sweet Potato', cal: 86, protein: 1.6, carbs: 20, fat: 0.1, baseUnit: 'g', baseAmount: 100 },
+            bell_pepper: { name: 'Bell Pepper', cal: 31, protein: 1, carbs: 6, fat: 0.3, baseUnit: 'g', baseAmount: 100 },
+            corn: { name: 'Corn', cal: 86, protein: 3.3, carbs: 19, fat: 1.4, baseUnit: 'g', baseAmount: 100 },
+            peas: { name: 'Peas', cal: 81, protein: 5.4, carbs: 14, fat: 0.4, baseUnit: 'g', baseAmount: 100 },
+            cauliflower: { name: 'Cauliflower', cal: 25, protein: 1.9, carbs: 5, fat: 0.3, baseUnit: 'g', baseAmount: 100 },
+            cabbage: { name: 'Cabbage', cal: 25, protein: 1.3, carbs: 5.8, fat: 0.1, baseUnit: 'g', baseAmount: 100 },
+            lettuce: { name: 'Lettuce', cal: 15, protein: 1.2, carbs: 2.9, fat: 0.2, baseUnit: 'g', baseAmount: 100 },
+            
+            // FRUITS
+            apple: { name: 'Apple', cal: 52, protein: 0.3, carbs: 14, fat: 0.2, baseUnit: 'piece', baseAmount: 1 },
+            banana: { name: 'Banana', cal: 89, protein: 1.1, carbs: 23, fat: 0.3, baseUnit: 'piece', baseAmount: 1 },
+            orange: { name: 'Orange', cal: 47, protein: 0.9, carbs: 12, fat: 0.3, baseUnit: 'piece', baseAmount: 1 },
+            mango: { name: 'Mango', cal: 60, protein: 0.8, carbs: 15, fat: 0.4, baseUnit: 'piece', baseAmount: 1 },
+            strawberry: { name: 'Strawberry', cal: 32, protein: 0.8, carbs: 7.7, fat: 0.3, baseUnit: 'g', baseAmount: 100 },
+            blueberry: { name: 'Blueberry', cal: 57, protein: 0.7, carbs: 14, fat: 0.3, baseUnit: 'g', baseAmount: 100 },
+            watermelon: { name: 'Watermelon', cal: 30, protein: 0.6, carbs: 7.6, fat: 0.2, baseUnit: 'g', baseAmount: 100 },
+            papaya: { name: 'Papaya', cal: 43, protein: 0.5, carbs: 11, fat: 0.3, baseUnit: 'g', baseAmount: 100 },
+            pineapple: { name: 'Pineapple', cal: 50, protein: 0.5, carbs: 13, fat: 0.1, baseUnit: 'g', baseAmount: 100 },
+            grape: { name: 'Grape', cal: 67, protein: 0.6, carbs: 17, fat: 0.4, baseUnit: 'g', baseAmount: 100 },
+            
+            // INDIAN DISHES - RICE DISHES
+            biryani_chicken: { name: 'Chicken Biryani', cal: 370, protein: 28, carbs: 35, fat: 12, baseUnit: 'plate', baseAmount: 1 },
+            biryani_vegetable: { name: 'Vegetable Biryani', cal: 320, protein: 8, carbs: 48, fat: 10, baseUnit: 'plate', baseAmount: 1 },
+            biryani_mutton: { name: 'Mutton Biryani', cal: 420, protein: 32, carbs: 35, fat: 18, baseUnit: 'plate', baseAmount: 1 },
+            pantha_bhaat_dal: { name: 'Pantha Bhaat (Rice with Dal)', cal: 280, protein: 12, carbs: 50, fat: 2, baseUnit: 'plate', baseAmount: 1 },
+            khichdi: { name: 'Khichdi', cal: 250, protein: 10, carbs: 45, fat: 2, baseUnit: 'plate', baseAmount: 1 },
+            khichdi_moong: { name: 'Moong Khichdi', cal: 240, protein: 12, carbs: 42, fat: 1.5, baseUnit: 'plate', baseAmount: 1 },
+            rice_sambar: { name: 'Rice with Sambar', cal: 320, protein: 9, carbs: 55, fat: 5, baseUnit: 'plate', baseAmount: 1 },
+            rice_rasam: { name: 'Rice with Rasam', cal: 280, protein: 6, carbs: 50, fat: 3, baseUnit: 'plate', baseAmount: 1 },
+            fried_rice: { name: 'Fried Rice', cal: 240, protein: 8, carbs: 42, fat: 5, baseUnit: 'plate', baseAmount: 1 },
+            fried_rice_egg: { name: 'Egg Fried Rice', cal: 280, protein: 12, carbs: 42, fat: 7, baseUnit: 'plate', baseAmount: 1 },
+
+            // INDIAN DISHES - BREADS & ROTIS
+            paratha_plain: { name: 'Plain Paratha', cal: 300, protein: 8, carbs: 38, fat: 14, baseUnit: 'piece', baseAmount: 1 },
+            paratha_aloo: { name: 'Aloo Paratha', cal: 350, protein: 9, carbs: 42, fat: 16, baseUnit: 'piece', baseAmount: 1 },
+            paratha_methi: { name: 'Methi Paratha', cal: 310, protein: 10, carbs: 36, fat: 14, baseUnit: 'piece', baseAmount: 1 },
+            paratha_gobi: { name: 'Gobi Paratha', cal: 320, protein: 9, carbs: 38, fat: 15, baseUnit: 'piece', baseAmount: 1 },
+            puri: { name: 'Puri', cal: 280, protein: 6, carbs: 32, fat: 15, baseUnit: 'piece', baseAmount: 1 },
+            bhature: { name: 'Bhature', cal: 320, protein: 8, carbs: 45, fat: 12, baseUnit: 'piece', baseAmount: 1 },
+            luchi: { name: 'Luchi', cal: 280, protein: 6, carbs: 32, fat: 14, baseUnit: 'piece', baseAmount: 1 },
+            dosa_masala: { name: 'Masala Dosa', cal: 320, protein: 8, carbs: 48, fat: 9, baseUnit: 'piece', baseAmount: 1 },
+            dosa_plain: { name: 'Plain Dosa', cal: 206, protein: 3, carbs: 35, fat: 6, baseUnit: 'piece', baseAmount: 1 },
+            dosa_cheese: { name: 'Cheese Dosa', cal: 380, protein: 12, carbs: 42, fat: 18, baseUnit: 'piece', baseAmount: 1 },
+
+            // INDIAN DISHES - BREADS
+            idli: { name: 'Idli', cal: 57, protein: 1.7, carbs: 11, fat: 1, baseUnit: 'piece', baseAmount: 1 },
+            vada: { name: 'Vada', cal: 150, protein: 4, carbs: 18, fat: 7, baseUnit: 'piece', baseAmount: 1 },
+            idli_sambhar: { name: 'Idli with Sambhar', cal: 190, protein: 5, carbs: 28, fat: 4, baseUnit: 'plate', baseAmount: 1 },
+            dhokla: { name: 'Dhokla', cal: 180, protein: 5, carbs: 32, fat: 4, baseUnit: 'plate', baseAmount: 1 },
+            uttapam: { name: 'Uttapam', cal: 240, protein: 6, carbs: 38, fat: 6, baseUnit: 'piece', baseAmount: 1 },
+
+            // INDIAN DISHES - CURRIES & GRAVIES
+            chickpea_curry: { name: 'Chickpea Curry', cal: 220, protein: 14, carbs: 28, fat: 5, baseUnit: 'cup', baseAmount: 1 },
+            paneer_butter_masala: { name: 'Paneer Butter Masala', cal: 380, protein: 24, carbs: 18, fat: 26, baseUnit: 'plate', baseAmount: 1 },
+            paneer_tikka_masala: { name: 'Paneer Tikka Masala', cal: 360, protein: 22, carbs: 16, fat: 24, baseUnit: 'plate', baseAmount: 1 },
+            paneer_do_pyaza: { name: 'Paneer Do Pyaza', cal: 320, protein: 20, carbs: 12, fat: 22, baseUnit: 'plate', baseAmount: 1 },
+            paneer_pakora: { name: 'Paneer Pakora', cal: 280, protein: 18, carbs: 16, fat: 18, baseUnit: 'plate', baseAmount: 1 },
+            paneer_samosa: { name: 'Paneer Samosa', cal: 220, protein: 8, carbs: 24, fat: 11, baseUnit: 'piece', baseAmount: 1 },
+            paneer_kofta: { name: 'Paneer Kofta', cal: 300, protein: 20, carbs: 14, fat: 20, baseUnit: 'plate', baseAmount: 1 },
+            tandoori_paneer: { name: 'Tandoori Paneer', cal: 240, protein: 22, carbs: 6, fat: 14, baseUnit: 'plate', baseAmount: 1 },
+            butter_chicken: { name: 'Butter Chicken', cal: 405, protein: 24, carbs: 8, fat: 30, baseUnit: 'plate', baseAmount: 1 },
+            butter_chicken_light: { name: 'Butter Chicken (Light)', cal: 320, protein: 28, carbs: 8, fat: 18, baseUnit: 'plate', baseAmount: 1 },
+            chicken_tikka_masala: { name: 'Chicken Tikka Masala', cal: 380, protein: 26, carbs: 14, fat: 26, baseUnit: 'plate', baseAmount: 1 },
+            tandoori_chicken: { name: 'Tandoori Chicken', cal: 280, protein: 35, carbs: 0, fat: 14, baseUnit: 'plate', baseAmount: 1 },
+            chicken_chettinad: { name: 'Chicken Chettinad', cal: 340, protein: 30, carbs: 8, fat: 20, baseUnit: 'plate', baseAmount: 1 },
+            chicken_keema: { name: 'Chicken Keema', cal: 360, protein: 32, carbs: 10, fat: 22, baseUnit: 'plate', baseAmount: 1 },
+            fish_curry: { name: 'Fish Curry', cal: 280, protein: 32, carbs: 6, fat: 14, baseUnit: 'plate', baseAmount: 1 },
+            shrimp_curry: { name: 'Shrimp Curry', cal: 260, protein: 28, carbs: 8, fat: 12, baseUnit: 'plate', baseAmount: 1 },
+            chole_bhature: { name: 'Chole Bhature', cal: 520, protein: 18, carbs: 72, fat: 16, baseUnit: 'plate', baseAmount: 1 },
+            rajma: { name: 'Rajma (Red Kidney Beans)', cal: 280, protein: 15, carbs: 40, fat: 3, baseUnit: 'cup', baseAmount: 1 },
+            rajma_rice: { name: 'Rajma Rice', cal: 380, protein: 14, carbs: 65, fat: 4, baseUnit: 'plate', baseAmount: 1 },
+            dal_makhani: { name: 'Dal Makhani', cal: 320, protein: 15, carbs: 24, fat: 18, baseUnit: 'cup', baseAmount: 1 },
+            dal_tadka: { name: 'Dal Tadka', cal: 180, protein: 12, carbs: 28, fat: 2, baseUnit: 'cup', baseAmount: 1 },
+            dal_fry: { name: 'Dal Fry', cal: 200, protein: 12, carbs: 30, fat: 3, baseUnit: 'cup', baseAmount: 1 },
+            sambhar: { name: 'Sambhar', cal: 120, protein: 7, carbs: 18, fat: 2, baseUnit: 'cup', baseAmount: 1 },
+            rasam: { name: 'Rasam', cal: 50, protein: 2, carbs: 8, fat: 1, baseUnit: 'cup', baseAmount: 1 },
+            aloo_gobi: { name: 'Aloo Gobi', cal: 190, protein: 6, carbs: 18, fat: 9, baseUnit: 'plate', baseAmount: 1 },
+            baingan_bharta: { name: 'Baingan Bharta', cal: 210, protein: 7, carbs: 16, fat: 13, baseUnit: 'plate', baseAmount: 1 },
+            mixed_vegetable_curry: { name: 'Mixed Vegetable Curry', cal: 220, protein: 8, carbs: 22, fat: 10, baseUnit: 'plate', baseAmount: 1 },
+            spinach_paneer: { name: 'Spinach Paneer (Palak Paneer)', cal: 340, protein: 25, carbs: 12, fat: 23, baseUnit: 'plate', baseAmount: 1 },
+            methi_chicken: { name: 'Methi Chicken', cal: 300, protein: 32, carbs: 6, fat: 16, baseUnit: 'plate', baseAmount: 1 },
+
+            // INDIAN DISHES - BREADS TRADITIONAL
+            nan: { name: 'Naan', cal: 262, protein: 8, carbs: 45, fat: 3, baseUnit: 'piece', baseAmount: 1 },
+            nan_butter: { name: 'Butter Naan', cal: 310, protein: 8, carbs: 45, fat: 10, baseUnit: 'piece', baseAmount: 1 },
+            nan_garlic: { name: 'Garlic Naan', cal: 300, protein: 8, carbs: 44, fat: 9, baseUnit: 'piece', baseAmount: 1 },
+            nan_cheese: { name: 'Cheese Naan', cal: 350, protein: 14, carbs: 44, fat: 14, baseUnit: 'piece', baseAmount: 1 },
+            roti: { name: 'Roti', cal: 250, protein: 7, carbs: 45, fat: 3, baseUnit: 'piece', baseAmount: 1 },
+            roti_wheat: { name: 'Wheat Roti', cal: 220, protein: 8, carbs: 40, fat: 2.5, baseUnit: 'piece', baseAmount: 1 },
+            chapati: { name: 'Chapati', cal: 206, protein: 6, carbs: 37, fat: 2, baseUnit: 'piece', baseAmount: 1 },
+            rumali_roti: { name: 'Rumali Roti', cal: 210, protein: 6, carbs: 38, fat: 2, baseUnit: 'piece', baseAmount: 1 },
+
+            // INDIAN DISHES - SNACKS
+            samosa: { name: 'Samosa', cal: 206, protein: 3.4, carbs: 23, fat: 11, baseUnit: 'piece', baseAmount: 1 },
+            samosa_aloo: { name: 'Aloo Samosa', cal: 220, protein: 3.5, carbs: 25, fat: 12, baseUnit: 'piece', baseAmount: 1 },
+            samosa_vegetable: { name: 'Vegetable Samosa', cal: 210, protein: 3, carbs: 24, fat: 11, baseUnit: 'piece', baseAmount: 1 },
+            samosa_meat: { name: 'Meat Samosa', cal: 240, protein: 8, carbs: 22, fat: 13, baseUnit: 'piece', baseAmount: 1 },
+            pakora: { name: 'Pakora', cal: 240, protein: 5, carbs: 28, fat: 12, baseUnit: 'piece', baseAmount: 1 },
+            onion_bhaji: { name: 'Onion Bhaji', cal: 200, protein: 4, carbs: 24, fat: 10, baseUnit: 'piece', baseAmount: 1 },
+            chikhalwali: { name: 'Chikhalwali (Puffed Snack)', cal: 180, protein: 4, carbs: 22, fat: 8, baseUnit: 'cup', baseAmount: 1 },
+            murukku: { name: 'Murukku', cal: 210, protein: 4, carbs: 26, fat: 10, baseUnit: 'piece', baseAmount: 1 },
+            chivda: { name: 'Chivda (Trail Mix)', cal: 300, protein: 8, carbs: 28, fat: 16, baseUnit: 'cup', baseAmount: 1 },
+            aloo_tikki: { name: 'Aloo Tikki', cal: 240, protein: 5, carbs: 28, fat: 12, baseUnit: 'piece', baseAmount: 1 },
+            tikki_papdi: { name: 'Papdi', cal: 120, protein: 3, carbs: 14, fat: 6, baseUnit: 'piece', baseAmount: 1 },
+
+            // INDIAN DISHES - STREET FOOD
+            pav_bhaji: { name: 'Pav Bhaji', cal: 380, protein: 12, carbs: 52, fat: 14, baseUnit: 'plate', baseAmount: 1 },
+            misal_pav: { name: 'Misal Pav', cal: 420, protein: 15, carbs: 56, fat: 16, baseUnit: 'plate', baseAmount: 1 },
+            vada_pav: { name: 'Vada Pav', cal: 380, protein: 12, carbs: 48, fat: 16, baseUnit: 'piece', baseAmount: 1 },
+            dahi_puri: { name: 'Dahi Puri (Gol Gappa)', cal: 240, protein: 6, carbs: 38, fat: 7, baseUnit: 'plate', baseAmount: 1 },
+            jalebi: { name: 'Jalebi', cal: 320, protein: 3, carbs: 80, fat: 0, baseUnit: 'piece', baseAmount: 1 },
+            laddu: { name: 'Laddu', cal: 200, protein: 5, carbs: 25, fat: 9, baseUnit: 'piece', baseAmount: 1 },
+            burfi: { name: 'Burfi', cal: 250, protein: 6, carbs: 30, fat: 12, baseUnit: 'piece', baseAmount: 1 },
+            kheer: { name: 'Kheer (Rice Pudding)', cal: 240, protein: 6, carbs: 32, fat: 9, baseUnit: 'cup', baseAmount: 1 },
+            gulab_jamun: { name: 'Gulab Jamun', cal: 180, protein: 2, carbs: 28, fat: 7, baseUnit: 'piece', baseAmount: 1 },
+            rasgulla: { name: 'Rasgulla', cal: 150, protein: 3, carbs: 28, fat: 2, baseUnit: 'piece', baseAmount: 1 },
+            halwa_gajar: { name: 'Halwa (Carrot)', cal: 280, protein: 4, carbs: 40, fat: 12, baseUnit: 'cup', baseAmount: 1 },
+
+            // INDIAN BREAKFAST
+            poha: { name: 'Poha (Flattened Rice)', cal: 260, protein: 5, carbs: 48, fat: 6, baseUnit: 'plate', baseAmount: 1 },
+            upma: { name: 'Upma', cal: 240, protein: 7, carbs: 38, fat: 7, baseUnit: 'cup', baseAmount: 1 },
+            upma_rava: { name: 'Rava Upma', cal: 250, protein: 6, carbs: 40, fat: 7, baseUnit: 'cup', baseAmount: 1 },
+            semiya_upma: { name: 'Semiya Upma', cal: 270, protein: 6, carbs: 42, fat: 8, baseUnit: 'cup', baseAmount: 1 },
+            idiyappam: { name: 'Idiyappam', cal: 280, protein: 5, carbs: 50, fat: 5, baseUnit: 'plate', baseAmount: 1 },
+            puttu: { name: 'Puttu', cal: 240, protein: 6, carbs: 42, fat: 4, baseUnit: 'piece', baseAmount: 1 },
+            appam: { name: 'Appam', cal: 180, protein: 3, carbs: 36, fat: 2, baseUnit: 'piece', baseAmount: 1 },
+            pesarattu: { name: 'Pesarattu', cal: 240, protein: 8, carbs: 38, fat: 6, baseUnit: 'piece', baseAmount: 1 },
+            adai: { name: 'Adai', cal: 200, protein: 7, carbs: 32, fat: 5, baseUnit: 'piece', baseAmount: 1 },
+
+            // BEVERAGES - INDIAN
+            masala_chai: { name: 'Masala Chai (Tea with Milk)', cal: 100, protein: 3, carbs: 12, fat: 4, baseUnit: 'cup', baseAmount: 1 },
+            lassi: { name: 'Lassi (Sweet)', cal: 180, protein: 8, carbs: 24, fat: 5, baseUnit: 'cup', baseAmount: 1 },
+            lassi_savory: { name: 'Lassi (Savory)', cal: 120, protein: 8, carbs: 10, fat: 4, baseUnit: 'cup', baseAmount: 1 },
+            buttermilk: { name: 'Buttermilk (Chaach)', cal: 80, protein: 6, carbs: 8, fat: 2, baseUnit: 'cup', baseAmount: 1 },
+            
+            // WESTERN DISHES - BURGERS & SANDWICHES
+            pizza: { name: 'Pizza', cal: 266, protein: 12, carbs: 33, fat: 10, baseUnit: 'slice', baseAmount: 1 },
+            pizza_margherita: { name: 'Margherita Pizza', cal: 280, protein: 13, carbs: 35, fat: 11, baseUnit: 'slice', baseAmount: 1 },
+            pizza_pepperoni: { name: 'Pepperoni Pizza', cal: 310, protein: 14, carbs: 33, fat: 15, baseUnit: 'slice', baseAmount: 1 },
+            pizza_vegetable: { name: 'Vegetable Pizza', cal: 240, protein: 11, carbs: 32, fat: 8, baseUnit: 'slice', baseAmount: 1 },
+            burger: { name: 'Burger', cal: 512, protein: 28, carbs: 40, fat: 28, baseUnit: 'piece', baseAmount: 1 },
+            burger_double: { name: 'Double Burger', cal: 750, protein: 40, carbs: 60, fat: 42, baseUnit: 'piece', baseAmount: 1 },
+            burger_veggie: { name: 'Veggie Burger', cal: 380, protein: 18, carbs: 42, fat: 16, baseUnit: 'piece', baseAmount: 1 },
+            hotdog: { name: 'Hot Dog', cal: 280, protein: 13, carbs: 22, fat: 16, baseUnit: 'piece', baseAmount: 1 },
+            sandwich: { name: 'Sandwich', cal: 340, protein: 16, carbs: 35, fat: 16, baseUnit: 'piece', baseAmount: 1 },
+            sandwich_club: { name: 'Club Sandwich', cal: 450, protein: 24, carbs: 38, fat: 24, baseUnit: 'piece', baseAmount: 1 },
+            fries: { name: 'French Fries', cal: 365, protein: 3.4, carbs: 48, fat: 17, baseUnit: 'g', baseAmount: 100 },
+            chicken_wings: { name: 'Chicken Wings', cal: 290, protein: 26, carbs: 0, fat: 21, baseUnit: 'g', baseAmount: 100 },
+            nuggets: { name: 'Chicken Nuggets', cal: 320, protein: 18, carbs: 20, fat: 20, baseUnit: 'g', baseAmount: 100 },
+            
+            // WESTERN DISHES - PASTA & OTHERS
+            pasta_spaghetti: { name: 'Spaghetti', cal: 131, protein: 5, carbs: 25, fat: 1, baseUnit: 'g', baseAmount: 100 },
+            pasta_penne: { name: 'Penne', cal: 131, protein: 5, carbs: 25, fat: 1, baseUnit: 'g', baseAmount: 100 },
+            pasta_lasagna: { name: 'Lasagna', cal: 240, protein: 15, carbs: 28, fat: 8, baseUnit: 'plate', baseAmount: 1 },
+            pasta_alfredo: { name: 'Fettuccine Alfredo', cal: 340, protein: 12, carbs: 32, fat: 18, baseUnit: 'plate', baseAmount: 1 },
+            pasta_carbonara: { name: 'Pasta Carbonara', cal: 380, protein: 18, carbs: 32, fat: 20, baseUnit: 'plate', baseAmount: 1 },
+            pasta_baked: { name: 'Baked Pasta', cal: 280, protein: 14, carbs: 32, fat: 10, baseUnit: 'plate', baseAmount: 1 },
+            steak: { name: 'Steak', cal: 271, protein: 26, carbs: 0, fat: 18, baseUnit: 'g', baseAmount: 100 },
+            steak_ribeye: { name: 'Ribeye Steak', cal: 291, protein: 25, carbs: 0, fat: 21, baseUnit: 'g', baseAmount: 100 },
+            steak_sirloin: { name: 'Sirloin Steak', cal: 242, protein: 26, carbs: 0, fat: 14, baseUnit: 'g', baseAmount: 100 },
+            grilled_fish: { name: 'Grilled Fish', cal: 200, protein: 30, carbs: 0, fat: 8, baseUnit: 'g', baseAmount: 100 },
+            salmon_grilled: { name: 'Grilled Salmon', cal: 280, protein: 28, carbs: 0, fat: 17, baseUnit: 'g', baseAmount: 100 },
+            
+            // ASIAN DISHES (beyond Indian)
+            pad_thai: { name: 'Pad Thai', cal: 370, protein: 10, carbs: 40, fat: 18, baseUnit: 'plate', baseAmount: 1 },
+            pho: { name: 'Pho (Vietnamese Noodle Soup)', cal: 280, protein: 20, carbs: 32, fat: 8, baseUnit: 'bowl', baseAmount: 1 },
+            ramen: { name: 'Ramen', cal: 340, protein: 15, carbs: 42, fat: 12, baseUnit: 'bowl', baseAmount: 1 },
+            tom_yum: { name: 'Tom Yum (Thai Soup)', cal: 150, protein: 18, carbs: 8, fat: 5, baseUnit: 'cup', baseAmount: 1 },
+            green_curry: { name: 'Green Curry', cal: 380, protein: 22, carbs: 16, fat: 26, baseUnit: 'plate', baseAmount: 1 },
+            tempura: { name: 'Tempura', cal: 320, protein: 12, carbs: 35, fat: 14, baseUnit: 'plate', baseAmount: 1 },
+            sushi_roll: { name: 'Sushi Roll', cal: 200, protein: 8, carbs: 26, fat: 7, baseUnit: 'piece', baseAmount: 1 },
+            donburi: { name: 'Donburi (Rice Bowl)', cal: 380, protein: 20, carbs: 48, fat: 10, baseUnit: 'bowl', baseAmount: 1 },
+            teriyaki_chicken: { name: 'Teriyaki Chicken', cal: 320, protein: 30, carbs: 16, fat: 14, baseUnit: 'plate', baseAmount: 1 },
+            
+            // MEXICAN FOOD
+            taco: { name: 'Taco', cal: 226, protein: 12, carbs: 18, fat: 13, baseUnit: 'piece', baseAmount: 1 },
+            taco_fish: { name: 'Fish Taco', cal: 240, protein: 16, carbs: 20, fat: 12, baseUnit: 'piece', baseAmount: 1 },
+            burrito: { name: 'Burrito', cal: 498, protein: 21, carbs: 51, fat: 23, baseUnit: 'piece', baseAmount: 1 },
+            burrito_chicken: { name: 'Chicken Burrito', cal: 520, protein: 28, carbs: 50, fat: 24, baseUnit: 'piece', baseAmount: 1 },
+            quesadilla: { name: 'Quesadilla', cal: 441, protein: 18, carbs: 34, fat: 27, baseUnit: 'piece', baseAmount: 1 },
+            enchilada: { name: 'Enchilada', cal: 380, protein: 15, carbs: 35, fat: 20, baseUnit: 'piece', baseAmount: 1 },
+            nachos: { name: 'Nachos', cal: 540, protein: 16, carbs: 48, fat: 31, baseUnit: 'plate', baseAmount: 1 },
+            chimichanga: { name: 'Chimichanga', cal: 620, protein: 24, carbs: 58, fat: 32, baseUnit: 'piece', baseAmount: 1 },
+            guacamole: { name: 'Guacamole', cal: 160, protein: 2, carbs: 9, fat: 15, baseUnit: 'tbsp', baseAmount: 2 },
+            
+            // MEDITERRANEAN & MIDDLE EAST
+            falafel: { name: 'Falafel', cal: 333, protein: 11, carbs: 29, fat: 17, baseUnit: 'piece', baseAmount: 1 },
+            hummus: { name: 'Hummus', cal: 180, protein: 5, carbs: 15, fat: 10, baseUnit: 'tbsp', baseAmount: 2 },
+            greek_salad: { name: 'Greek Salad', cal: 220, protein: 8, carbs: 20, fat: 12, baseUnit: 'plate', baseAmount: 1 },
+            gyro: { name: 'Gyro', cal: 520, protein: 27, carbs: 48, fat: 24, baseUnit: 'piece', baseAmount: 1 },
+            kebab: { name: 'Kebab', cal: 420, protein: 30, carbs: 32, fat: 22, baseUnit: 'piece', baseAmount: 1 },
+            shish_kebab: { name: 'Shish Kebab', cal: 380, protein: 35, carbs: 8, fat: 22, baseUnit: 'plate', baseAmount: 1 },
+            shawarma: { name: 'Shawarma', cal: 480, protein: 28, carbs: 42, fat: 24, baseUnit: 'piece', baseAmount: 1 },
+            tabbouleh: { name: 'Tabbouleh', cal: 190, protein: 6, carbs: 22, fat: 9, baseUnit: 'cup', baseAmount: 1 },
+            tzatziki: { name: 'Tzatziki (Cucumber Yogurt Dip)', cal: 80, protein: 4, carbs: 4, fat: 6, baseUnit: 'tbsp', baseAmount: 2 },
+            baba_ghanoush: { name: 'Baba Ghanoush', cal: 150, protein: 3, carbs: 12, fat: 11, baseUnit: 'tbsp', baseAmount: 2 },
+            
+            // SNACKS & LIGHT BITES
+            popcorn: { name: 'Popcorn', cal: 387, protein: 12, carbs: 77, fat: 4, baseUnit: 'g', baseAmount: 100 },
+            chips: { name: 'Chips', cal: 536, protein: 7, carbs: 49, fat: 35, baseUnit: 'g', baseAmount: 100 },
+            tortilla_chips: { name: 'Tortilla Chips', cal: 540, protein: 8, carbs: 54, fat: 30, baseUnit: 'g', baseAmount: 100 },
+            pretzels: { name: 'Pretzels', cal: 424, protein: 10, carbs: 84, fat: 2, baseUnit: 'g', baseAmount: 100 },
+            granola_bar: { name: 'Granola Bar', cal: 450, protein: 10, carbs: 58, fat: 20, baseUnit: 'piece', baseAmount: 1 },
+            protein_bar: { name: 'Protein Bar', cal: 280, protein: 20, carbs: 24, fat: 10, baseUnit: 'piece', baseAmount: 1 },
+            
+            // DESSERTS & SWEETS
+            chocolate: { name: 'Chocolate', cal: 546, protein: 8, carbs: 58, fat: 31, baseUnit: 'g', baseAmount: 100 },
+            dark_chocolate: { name: 'Dark Chocolate', cal: 598, protein: 7, carbs: 50, fat: 43, baseUnit: 'g', baseAmount: 100 },
+            cookie: { name: 'Cookie', cal: 492, protein: 6, carbs: 65, fat: 24, baseUnit: 'piece', baseAmount: 1 },
+            brownie: { name: 'Brownie', cal: 540, protein: 5, carbs: 68, fat: 28, baseUnit: 'piece', baseAmount: 1 },
+            ice_cream: { name: 'Ice Cream', cal: 207, protein: 3.5, carbs: 24, fat: 11, baseUnit: 'cup', baseAmount: 1 },
+            frozen_yogurt: { name: 'Frozen Yogurt', cal: 160, protein: 4, carbs: 28, fat: 3, baseUnit: 'cup', baseAmount: 1 },
+            cake: { name: 'Cake', cal: 352, protein: 4, carbs: 48, fat: 17, baseUnit: 'slice', baseAmount: 1 },
+            cheesecake: { name: 'Cheesecake', cal: 420, protein: 6, carbs: 38, fat: 28, baseUnit: 'slice', baseAmount: 1 },
+            pie: { name: 'Pie', cal: 296, protein: 3, carbs: 33, fat: 17, baseUnit: 'slice', baseAmount: 1 },
+            donut: { name: 'Donut', cal: 452, protein: 4, carbs: 51, fat: 25, baseUnit: 'piece', baseAmount: 1 },
+            cupcake: { name: 'Cupcake', cal: 320, protein: 3, carbs: 45, fat: 14, baseUnit: 'piece', baseAmount: 1 },
+            muffin: { name: 'Muffin', cal: 380, protein: 6, carbs: 58, fat: 15, baseUnit: 'piece', baseAmount: 1 },
+            churro: { name: 'Churro', cal: 340, protein: 3, carbs: 42, fat: 17, baseUnit: 'piece', baseAmount: 1 },
+            candy: { name: 'Candy', cal: 400, protein: 0, carbs: 100, fat: 2, baseUnit: 'g', baseAmount: 100 },
+            
+            // BEVERAGES - COLD
+            coffee: { name: 'Coffee (Black)', cal: 2, protein: 0.3, carbs: 0, fat: 0, baseUnit: 'cup', baseAmount: 1 },
+            coffee_latte: { name: 'Latte', cal: 190, protein: 13, carbs: 18, fat: 7, baseUnit: 'cup', baseAmount: 1 },
+            coffee_cappuccino: { name: 'Cappuccino', cal: 150, protein: 10, carbs: 12, fat: 5.5, baseUnit: 'cup', baseAmount: 1 },
+            coffee_macchiato: { name: 'Macchiato', cal: 140, protein: 9, carbs: 10, fat: 5, baseUnit: 'cup', baseAmount: 1 },
+            cold_brew_coffee: { name: 'Cold Brew Coffee', cal: 5, protein: 0.4, carbs: 0, fat: 0, baseUnit: 'cup', baseAmount: 1 },
+            tea: { name: 'Tea (Black)', cal: 2, protein: 0, carbs: 0, fat: 0, baseUnit: 'cup', baseAmount: 1 },
+            green_tea: { name: 'Green Tea', cal: 2, protein: 0, carbs: 0, fat: 0, baseUnit: 'cup', baseAmount: 1 },
+            milk: { name: 'Milk', cal: 61, protein: 3.2, carbs: 4.8, fat: 3.3, baseUnit: 'cup', baseAmount: 1 },
+            almond_milk: { name: 'Almond Milk', cal: 30, protein: 1, carbs: 1, fat: 2.5, baseUnit: 'cup', baseAmount: 1 },
+            coconut_milk: { name: 'Coconut Milk', cal: 220, protein: 2, carbs: 3, fat: 22, baseUnit: 'cup', baseAmount: 1 },
+            juice_orange: { name: 'Orange Juice', cal: 47, protein: 0.9, carbs: 12, fat: 0.2, baseUnit: 'cup', baseAmount: 1 },
+            juice_apple: { name: 'Apple Juice', cal: 44, protein: 0.1, carbs: 11, fat: 0.1, baseUnit: 'cup', baseAmount: 1 },
+            juice_cranberry: { name: 'Cranberry Juice', cal: 46, protein: 0, carbs: 11, fat: 0.1, baseUnit: 'cup', baseAmount: 1 },
+            smoothie: { name: 'Fruit Smoothie', cal: 280, protein: 8, carbs: 52, fat: 5, baseUnit: 'cup', baseAmount: 1 },
+            soda: { name: 'Soda', cal: 140, protein: 0, carbs: 39, fat: 0, baseUnit: 'cup', baseAmount: 1 },
+            diet_soda: { name: 'Diet Soda', cal: 0, protein: 0, carbs: 0, fat: 0, baseUnit: 'cup', baseAmount: 1 },
+            sports_drink: { name: 'Sports Drink', cal: 63, protein: 0, carbs: 16, fat: 0, baseUnit: 'cup', baseAmount: 1 },
+            energy_drink: { name: 'Energy Drink', cal: 110, protein: 0, carbs: 27, fat: 0, baseUnit: 'cup', baseAmount: 1 },
+            
+            // ALCOHOLIC BEVERAGES
+            beer: { name: 'Beer', cal: 43, protein: 0.5, carbs: 3.6, fat: 0, baseUnit: 'cup', baseAmount: 1 },
+            wine_red: { name: 'Red Wine', cal: 85, protein: 0.1, carbs: 2.6, fat: 0, baseUnit: 'cup', baseAmount: 1 },
+            wine_white: { name: 'White Wine', cal: 80, protein: 0.1, carbs: 1, fat: 0, baseUnit: 'cup', baseAmount: 1 },
+            wine_rose: { name: 'Rose Wine', cal: 83, protein: 0.1, carbs: 2, fat: 0, baseUnit: 'cup', baseAmount: 1 },
+            vodka: { name: 'Vodka (1.5 oz)', cal: 97, protein: 0, carbs: 0, fat: 0, baseUnit: 'shot', baseAmount: 1 },
+            rum: { name: 'Rum (1.5 oz)', cal: 97, protein: 0, carbs: 0, fat: 0, baseUnit: 'shot', baseAmount: 1 },
+            whiskey: { name: 'Whiskey (1.5 oz)', cal: 110, protein: 0, carbs: 0, fat: 0, baseUnit: 'shot', baseAmount: 1 },
+            
+            // SOUPS & BROTHS
+            vegetable_soup: { name: 'Vegetable Soup', cal: 73, protein: 3.5, carbs: 12, fat: 1.6, baseUnit: 'cup', baseAmount: 1 },
+            chicken_soup: { name: 'Chicken Soup', cal: 120, protein: 12, carbs: 5, fat: 5, baseUnit: 'cup', baseAmount: 1 },
+            tomato_soup: { name: 'Tomato Soup', cal: 87, protein: 2, carbs: 14, fat: 2.5, baseUnit: 'cup', baseAmount: 1 },
+            cream_soup: { name: 'Cream Soup', cal: 200, protein: 6, carbs: 12, fat: 14, baseUnit: 'cup', baseAmount: 1 },
+            minestrone: { name: 'Minestrone Soup', cal: 130, protein: 5, carbs: 20, fat: 2, baseUnit: 'cup', baseAmount: 1 },
+            lentil_soup: { name: 'Lentil Soup', cal: 140, protein: 8, carbs: 22, fat: 2, baseUnit: 'cup', baseAmount: 1 },
+            pea_soup: { name: 'Pea Soup', cal: 160, protein: 10, carbs: 28, fat: 1, baseUnit: 'cup', baseAmount: 1 },
+            mushroom_soup: { name: 'Mushroom Soup', cal: 110, protein: 4, carbs: 8, fat: 7, baseUnit: 'cup', baseAmount: 1 },
+            curry_soup: { name: 'Curry Soup', cal: 180, protein: 15, carbs: 12, fat: 7, baseUnit: 'plate', baseAmount: 1 },
+            
+            // SALADS & SIDES
+            salad_green: { name: 'Green Salad', cal: 45, protein: 1.5, carbs: 8, fat: 1, baseUnit: 'plate', baseAmount: 1 },
+            greek_salad: { name: 'Greek Salad', cal: 220, protein: 8, carbs: 20, fat: 12, baseUnit: 'plate', baseAmount: 1 },
+            caesar_salad: { name: 'Caesar Salad', cal: 280, protein: 12, carbs: 18, fat: 18, baseUnit: 'plate', baseAmount: 1 },
+            coleslaw: { name: 'Coleslaw', cal: 150, protein: 1.5, carbs: 14, fat: 9, baseUnit: 'cup', baseAmount: 1 },
+            potato_salad: { name: 'Potato Salad', cal: 320, protein: 6, carbs: 28, fat: 20, baseUnit: 'cup', baseAmount: 1 },
+            pasta_salad: { name: 'Pasta Salad', cal: 280, protein: 8, carbs: 32, fat: 14, baseUnit: 'cup', baseAmount: 1 },
+            
+            // NUTS & SEEDS
+            almonds: { name: 'Almonds', cal: 579, protein: 21, carbs: 22, fat: 50, baseUnit: 'g', baseAmount: 100 },
+            peanuts: { name: 'Peanuts', cal: 567, protein: 26, carbs: 16, fat: 49, baseUnit: 'g', baseAmount: 100 },
+            cashews: { name: 'Cashews', cal: 553, protein: 18, carbs: 30, fat: 44, baseUnit: 'g', baseAmount: 100 },
+            walnuts: { name: 'Walnuts', cal: 654, protein: 9, carbs: 14, fat: 65, baseUnit: 'g', baseAmount: 100 },
+            pecans: { name: 'Pecans', cal: 691, protein: 9, carbs: 14, fat: 72, baseUnit: 'g', baseAmount: 100 },
+            pistachio: { name: 'Pistachios', cal: 562, protein: 20, carbs: 28, fat: 45, baseUnit: 'g', baseAmount: 100 },
+            macadamia: { name: 'Macadamia Nuts', cal: 718, protein: 8, carbs: 14, fat: 76, baseUnit: 'g', baseAmount: 100 },
+            pumpkin_seeds: { name: 'Pumpkin Seeds', cal: 540, protein: 25, carbs: 20, fat: 45, baseUnit: 'g', baseAmount: 100 },
+            sunflower_seeds: { name: 'Sunflower Seeds', cal: 584, protein: 20, carbs: 20, fat: 51, baseUnit: 'g', baseAmount: 100 },
+            chia_seeds: { name: 'Chia Seeds', cal: 486, protein: 17, carbs: 42, fat: 31, baseUnit: 'g', baseAmount: 100 },
+            peanut_butter: { name: 'Peanut Butter', cal: 588, protein: 25, carbs: 20, fat: 50, baseUnit: 'tbsp', baseAmount: 2 },
+            almond_butter: { name: 'Almond Butter', cal: 614, protein: 23, carbs: 21, fat: 55, baseUnit: 'tbsp', baseAmount: 2 },
+            
+            // CONDIMENTS & SAUCES
+            ketchup: { name: 'Ketchup', cal: 99, protein: 0, carbs: 26, fat: 0.1, baseUnit: 'tbsp', baseAmount: 1 },
+            mayonnaise: { name: 'Mayonnaise', cal: 717, protein: 0, carbs: 0.6, fat: 80, baseUnit: 'tbsp', baseAmount: 1 },
+            mustard: { name: 'Mustard', cal: 66, protein: 3.6, carbs: 6, fat: 3.6, baseUnit: 'tbsp', baseAmount: 1 },
+            soy_sauce: { name: 'Soy Sauce', cal: 16, protein: 2.2, carbs: 1.5, fat: 0.5, baseUnit: 'tbsp', baseAmount: 1 },
+            olive_oil: { name: 'Olive Oil', cal: 884, protein: 0, carbs: 0, fat: 100, baseUnit: 'tbsp', baseAmount: 1 },
+            butter: { name: 'Butter', cal: 717, protein: 0.9, carbs: 0, fat: 81, baseUnit: 'tbsp', baseAmount: 1 },
+            peanut_oil: { name: 'Peanut Oil', cal: 884, protein: 0, carbs: 0, fat: 100, baseUnit: 'tbsp', baseAmount: 1 },
+            coconut_oil: { name: 'Coconut Oil', cal: 892, protein: 0, carbs: 0, fat: 100, baseUnit: 'tbsp', baseAmount: 1 },
+            sriracha: { name: 'Sriracha Sauce', cal: 24, protein: 1, carbs: 4, fat: 1, baseUnit: 'tbsp', baseAmount: 1 },
+            chili_sauce: { name: 'Chili Sauce', cal: 40, protein: 1, carbs: 8, fat: 1, baseUnit: 'tbsp', baseAmount: 1 },
+            
+            // BREAKFAST ITEMS
+            oatmeal: { name: 'Oatmeal', cal: 150, protein: 5, carbs: 27, fat: 3, baseUnit: 'cup', baseAmount: 1 },
+            cereal: { name: 'Cereal', cal: 120, protein: 3, carbs: 25, fat: 1, baseUnit: 'cup', baseAmount: 1 },
+            granola: { name: 'Granola', cal: 420, protein: 10, carbs: 55, fat: 18, baseUnit: 'cup', baseAmount: 1 },
+            pancake: { name: 'Pancake', cal: 58, protein: 2, carbs: 11, fat: 0.5, baseUnit: 'piece', baseAmount: 1 },
+            waffle: { name: 'Waffle', cal: 110, protein: 4, carbs: 15, fat: 4, baseUnit: 'piece', baseAmount: 1 },
+            french_toast: { name: 'French Toast', cal: 160, protein: 6, carbs: 18, fat: 7, baseUnit: 'slice', baseAmount: 1 },
+            hash_browns: { name: 'Hash Browns', cal: 280, protein: 4, carbs: 28, fat: 17, baseUnit: 'cup', baseAmount: 1 },
+            scrambled_eggs: { name: 'Scrambled Eggs', cal: 155, protein: 13, carbs: 1.1, fat: 11, baseUnit: 'piece', baseAmount: 2 },
+            
+            // YOGURT & DAIRY
+            yogurt_plain: { name: 'Plain Yogurt', cal: 59, protein: 10, carbs: 3.5, fat: 0.4, baseUnit: 'cup', baseAmount: 1 },
+            yogurt_greek: { name: 'Greek Yogurt', cal: 100, protein: 17, carbs: 6, fat: 0.7, baseUnit: 'cup', baseAmount: 1 },
+            yogurt_flavored: { name: 'Flavored Yogurt', cal: 150, protein: 8, carbs: 24, fat: 2, baseUnit: 'cup', baseAmount: 1 },
+            cheese: { name: 'Cheese', cal: 402, protein: 25, carbs: 1.3, fat: 33, baseUnit: 'g', baseAmount: 100 },
+            mozzarella: { name: 'Mozzarella', cal: 280, protein: 28, carbs: 3.1, fat: 17, baseUnit: 'g', baseAmount: 100 },
+            cheddar: { name: 'Cheddar Cheese', cal: 403, protein: 25, carbs: 1.3, fat: 33, baseUnit: 'g', baseAmount: 100 },
+            
+            // SPECIAL DISHES
+            fondue: { name: 'Cheese Fondue', cal: 420, protein: 20, carbs: 12, fat: 32, baseUnit: 'plate', baseAmount: 1 },
+            raclette: { name: 'Raclette', cal: 380, protein: 24, carbs: 8, fat: 28, baseUnit: 'plate', baseAmount: 1 },
+            risotto: { name: 'Risotto', cal: 380, protein: 14, carbs: 52, fat: 12, baseUnit: 'plate', baseAmount: 1 },
+            paella: { name: 'Paella', cal: 420, protein: 18, carbs: 48, fat: 16, baseUnit: 'plate', baseAmount: 1 },
+            spaghetti_bolognese: { name: 'Spaghetti Bolognese', cal: 380, protein: 22, carbs: 42, fat: 12, baseUnit: 'plate', baseAmount: 1 },
+        };
+
+        const app = {
+            meals: [],
+            preferences: { preference: 'all', dietStatus: 'ontrack', ingredients: [] },
+            selectedSuggestionFood: null,
+            recognition: null,
+            isListening: false,
+            apiKey: null,
+            isApiConnected: false,
+
+            init() {
+                this.setupVoiceRecognition();
+                this.loadApiKey();
+                this.updateUI();
+                this.setupEventListeners();
+                this.loadMealsFromStorage();
+            },
+
+            // API Key Management
+            setApiKey() {
+                const apiKey = document.getElementById('apiKeyInput').value.trim();
+                if (!apiKey) {
+                    alert('Please enter your OpenAI API key');
+                    return;
+                }
+                
+                if (!apiKey.startsWith('sk-')) {
+                    alert('Invalid API key format. OpenAI keys start with "sk-"');
+                    return;
+                }
+
+                this.apiKey = apiKey;
+                localStorage.setItem('healthtrack_api_key', apiKey);
+                this.testApiConnection();
+            },
+
+            loadApiKey() {
+                const saved = localStorage.getItem('healthtrack_api_key');
+                if (saved) {
+                    this.apiKey = saved;
+                    document.getElementById('apiKeyInput').value = saved;
+                    this.testApiConnection();
+                }
+            },
+
+            clearApiKey() {
+                this.apiKey = null;
+                this.isApiConnected = false;
+                localStorage.removeItem('healthtrack_api_key');
+                document.getElementById('apiKeyInput').value = '';
+                this.updateApiStatus();
+            },
+
+            toggleApiKeyVisibility() {
+                const input = document.getElementById('apiKeyInput');
+                input.type = input.type === 'password' ? 'text' : 'password';
+            },
+
+            async testApiConnection() {
+                try {
+                    const response = await fetch('https://api.openai.com/v1/models', {
+                        headers: {
+                            'Authorization': `Bearer ${this.apiKey}`,
+                        }
+                    });
+
+                    if (response.ok) {
+                        this.isApiConnected = true;
+                        this.updateApiStatus();
+                        console.log('✅ OpenAI API Connected');
+                    } else {
+                        this.isApiConnected = false;
+                        alert('Invalid API key. Please check and try again.');
+                        this.updateApiStatus();
+                    }
+                } catch (error) {
+                    this.isApiConnected = false;
+                    console.log('API Connection test failed:', error);
+                    this.updateApiStatus();
+                }
+            },
+
+            updateApiStatus() {
+                const statusDiv = document.getElementById('apiStatus');
+                const indicator = document.getElementById('apiIndicator');
+
+                if (this.isApiConnected) {
+                    statusDiv.className = 'api-status connected';
+                    statusDiv.innerHTML = '✅ OpenAI Connected - Using AI-Powered Suggestions';
+                    indicator.className = 'ai-indicator active';
+                    indicator.textContent = '● AI Enabled';
+                } else {
+                    statusDiv.className = 'api-status disconnected';
+                    statusDiv.innerHTML = '⚠️ Not Connected - Using Local Database';
+                    indicator.className = 'ai-indicator inactive';
+                    indicator.textContent = '○ Local Mode';
+                }
+            },
+
+            // AI-Powered Meal Suggestions
+            async generateAISuggestions() {
+                if (!this.isApiConnected) {
+                    return this.generateLocalSuggestions();
+                }
+
+                try {
+                    const totalCal = this.meals.reduce((sum, m) => sum + m.calories, 0);
+                    const totalProtein = this.meals.reduce((sum, m) => sum + m.protein, 0);
+                    const totalCarbs = this.meals.reduce((sum, m) => sum + m.carbs, 0);
+                    const totalFat = this.meals.reduce((sum, m) => sum + m.fat, 0);
+                    const goal = parseInt(document.getElementById('dailyGoal').value) || 2000;
+                    const remaining = goal - totalCal;
+
+                    // Build preference constraints
+                    let preferenceConstraint = '';
+                    if (this.preferences.preference === 'vegetarian') {
+                        preferenceConstraint = 'NO MEAT, NO FISH - Vegetarian only (eggs, dairy, plant-based ok)';
+                    } else if (this.preferences.preference === 'vegan') {
+                        preferenceConstraint = 'NO ANIMAL PRODUCTS - Vegan only (plant-based, no dairy, no eggs)';
+                    } else if (this.preferences.preference === 'highprotein') {
+                        preferenceConstraint = 'HIGH PROTEIN FOCUS - Each meal should have 35+ grams of protein';
+                    } else if (this.preferences.preference === 'lowcarb') {
+                        preferenceConstraint = 'LOW CARB FOCUS - Minimize carbs, maximize protein and healthy fats';
+                    }
+
+                    // Build ingredients constraint
+                    let ingredientConstraint = '';
+                    if (this.preferences.ingredients.length > 0) {
+                        ingredientConstraint = `\n- IMPORTANT: Suggest meals using ONLY these available ingredients at home: ${this.preferences.ingredients.join(', ')}. Do NOT suggest meals requiring ingredients not in this list.`;
+                    }
+
+                    // Build diet status recommendation
+                    let dietStatusGuide = '';
+                    if (this.preferences.dietStatus === 'junkfood') {
+                        dietStatusGuide = 'JUNK FOOD RECOVERY - Suggest HIGH-PROTEIN meals to balance the day. Focus on lean proteins, whole grains, vegetables.';
+                    } else if (this.preferences.dietStatus === 'needprotein') {
+                        dietStatusGuide = 'PROTEIN DEFICIT - User has eaten only ' + totalProtein + 'g protein. Suggest VERY HIGH PROTEIN meals (40+ grams each).';
+                    } else if (this.preferences.dietStatus === 'undereating') {
+                        dietStatusGuide = 'CALORIE DEFICIT - User has only consumed ' + totalCal + ' calories. Suggest CALORIE-DENSE healthy meals with good macros.';
+                    } else if (this.preferences.dietStatus === 'toolate') {
+                        dietStatusGuide = 'LATE MEAL - Suggest LIGHT, EASY-TO-DIGEST meals. Low on heavy carbs/fats, high on protein and veggies.';
+                    } else {
+                        dietStatusGuide = 'BALANCED NUTRITION - Suggest well-balanced meals with good protein, carbs, and healthy fats.';
+                    }
+
+                    const prompt = `You are a professional nutrition expert. Suggest 3 DIFFERENT, PRACTICAL lunch/dinner meal ideas based on user's current nutrition intake and preferences.
+
+TODAY'S NUTRITION STATS:
+- Consumed: ${totalCal} calories / ${goal} goal (${remaining} remaining)
+- Protein: ${totalProtein}g | Carbs: ${totalCarbs}g | Fat: ${totalFat}g
+
+CONSTRAINTS & PREFERENCES:
+${preferenceConstraint ? '- ' + preferenceConstraint : ''}
+${ingredientConstraint}
+- Diet Guidance: ${dietStatusGuide}
+
+REQUIREMENTS:
+1. All suggestions must be HOME-COOKED, PRACTICAL meals (no restaurant/processed foods)
+2. Each meal should be different (no duplicates)
+3. Meals should help achieve today's nutritional goals
+4. Focus on: Quick to prepare, uses common ingredients
+5. If ingredients are specified, ONLY use those ingredients
+
+Respond with ONLY a valid JSON array, no markdown or extra text:
+[
+  {"name": "Meal Name with simple description", "calories": 450, "protein": 40, "reason": "Why this meal for you"},
+  {"name": "Second Meal", "calories": 480, "protein": 38, "reason": "Benefit"},
+  {"name": "Third Meal", "calories": 420, "protein": 35, "reason": "Benefit"}
+]`;
+
+                    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${this.apiKey}`,
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            model: 'gpt-3.5-turbo',
+                            messages: [
+                                {
+                                    role: 'system',
+                                    content: 'You are a professional nutrition expert who provides personalized meal suggestions. Respond ONLY with valid JSON array, no markdown, no extra text, no explanations.'
+                                },
+                                {
+                                    role: 'user',
+                                    content: prompt
+                                }
+                            ],
+                            temperature: 0.7,
+                            max_tokens: 800
+                        })
+                    });
+
+                    if (!response.ok) {
+                        console.log('API Error:', response.statusText);
+                        return this.generateLocalSuggestions();
+                    }
+
+                    const data = await response.json();
+                    const content = data.choices[0].message.content.trim();
+                    
+                    // Parse JSON response
+                    try {
+                        let suggestions = JSON.parse(content);
+                        // Validate structure
+                        if (Array.isArray(suggestions) && suggestions.length > 0) {
+                            suggestions = suggestions.slice(0, 3); // Limit to 3
+                            return suggestions;
+                        }
+                    } catch (e) {
+                        console.log('Failed to parse AI response:', content);
+                    }
+                    
+                    return this.generateLocalSuggestions();
+                } catch (error) {
+                    console.log('AI suggestion error:', error);
+                    return this.generateLocalSuggestions();
+                }
+            },
+
+            setupVoiceRecognition() {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                if (SpeechRecognition) {
+                    this.recognition = new SpeechRecognition();
+                    this.recognition.continuous = false;
+                    this.recognition.interimResults = true;
+                    this.recognition.language = 'en-US';
+
+                    this.recognition.onstart = () => {
+                        this.isListening = true;
+                        const btn = document.getElementById('voiceBtn');
+                        btn.classList.add('listening');
+                        document.getElementById('voiceStatus').textContent = '🎤 Listening...';
+                        document.getElementById('voiceStatus').classList.add('active');
+                    };
+
+                    this.recognition.onend = () => {
+                        this.isListening = false;
+                        const btn = document.getElementById('voiceBtn');
+                        btn.classList.remove('listening');
+                        document.getElementById('voiceStatus').textContent = '';
+                    };
+
+                    this.recognition.onresult = (event) => {
+                        let transcript = '';
+                        for (let i = event.resultIndex; i < event.results.length; i++) {
+                            transcript += event.results[i][0].transcript;
+                        }
+                        document.getElementById('textInput').value = transcript.trim();
+                        this.showSuggestions();
+                    };
+
+                    this.recognition.onerror = (event) => {
+                        const status = document.getElementById('voiceStatus');
+                        status.classList.add('error');
+                        if (event.error === 'no-speech') {
+                            status.textContent = '❌ No speech detected. Try again.';
+                        } else if (event.error === 'network') {
+                            status.textContent = '❌ Network error. Check your connection.';
+                        } else if (event.error === 'not-allowed') {
+                            status.textContent = '❌ Microphone permission denied.';
+                        } else {
+                            status.textContent = `❌ Error: ${event.error}`;
+                        }
+                    };
+                } else {
+                    document.getElementById('voiceStatus').textContent = '❌ Voice not supported in your browser';
+                    document.getElementById('voiceBtn').disabled = true;
+                }
+            },
+
+            setupEventListeners() {
+                document.getElementById('voiceBtn').addEventListener('click', () => this.toggleVoice());
+                document.getElementById('textInput').addEventListener('input', () => this.showSuggestions());
+                document.getElementById('textInput').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') this.handleTextInput();
+                });
+            },
+
+            toggleVoice() {
+                if (!this.recognition) return;
+                if (this.isListening) {
+                    this.recognition.stop();
+                } else {
+                    document.getElementById('textInput').value = '';
+                    document.getElementById('voiceStatus').classList.remove('error');
+                    this.recognition.start();
+                }
+            },
+
+            showSuggestions() {
+                const input = document.getElementById('textInput').value.toLowerCase().trim();
+                if (input.length < 1) {
+                    document.getElementById('suggestionsContainer').style.display = 'none';
+                    return;
+                }
+
+                const suggestions = Object.values(FOOD_DATABASE)
+                    .filter(food => food.name.toLowerCase().includes(input))
+                    .slice(0, 8);
+
+                if (suggestions.length === 0) {
+                    document.getElementById('suggestionsContainer').style.display = 'none';
+                    return;
+                }
+
+                let html = '';
+                suggestions.forEach(food => {
+                    html += `
+                        <div class="suggestion-item" onclick="app.selectSuggestion('${food.name}')">
+                            <div class="suggestion-name">${food.name}</div>
+                            <div class="suggestion-nutrition">${food.cal} cal | P: ${food.protein}g | C: ${food.carbs}g | F: ${food.fat}g per ${food.baseAmount}${food.baseUnit}</div>
+                        </div>
+                    `;
+                });
+
+                document.getElementById('suggestionsContainer').innerHTML = html;
+                document.getElementById('suggestionsContainer').style.display = 'block';
+            },
+
+            selectSuggestion(foodName) {
+                document.getElementById('textInput').value = foodName;
+                document.getElementById('suggestionsContainer').style.display = 'none';
+                this.parseMeals();
+            },
+
+            handleTextInput() {
+                this.parseMeals();
+                document.getElementById('textInput').value = '';
+                document.getElementById('suggestionsContainer').style.display = 'none';
+            },
+
+            parseMeals() {
+                const input = document.getElementById('textInput').value.trim();
+                if (!input) return;
+
+                // Split by delimiters
+                const delimiters = /\s+(?:and|with|plus|,|;)\s+/gi;
+                const foodItems = input.split(delimiters).filter(item => item.trim());
+
+                this.renderParsedFoods(foodItems);
+            },
+
+            renderParsedFoods(foodItems) {
+                let html = '';
+                const foods = [];
+
+                foodItems.forEach((item, index) => {
+                    const parsed = this.parseFood(item);
+                    foods.push(parsed);
+
+                    const isComplete = parsed.quantity && parsed.quantity > 0;
+                    const statusClass = isComplete ? 'complete' : 'incomplete';
+                    const statusText = isComplete ? '✅ Complete' : '⚠️ Missing portion';
+
+                    html += `
+                        <div class="food-item ${statusClass}" id="food-${index}">
+                            <div class="food-item-header">
+                                <div class="food-item-name" id="foodname-${index}">${parsed.food.name}</div>
+                                <div style="display: flex; gap: 8px;">
+                                    <button class="edit-btn" title="Edit food name" onclick="app.editFoodName(${index})">✏️</button>
+                                    <button class="remove-btn" title="Remove this meal" onclick="app.removeParsedFood(${index})">🗑️</button>
+                                    <div class="food-status ${statusClass.split('-')[0]}">${statusText}</div>
+                                </div>
+                            </div>
+                            <div class="food-inputs">
+                                <div class="input-group">
+                                    <label>Quantity</label>
+                                    <input type="number" id="qty-${index}" value="${parsed.quantity || ''}" placeholder="e.g., 1, 200" min="0" step="0.1">
+                                </div>
+                                <div class="input-group">
+                                    <label>Unit</label>
+                                    <select id="unit-${index}">
+                                        <option value="g" ${parsed.unit === 'g' ? 'selected' : ''}>Gram (g)</option>
+                                        <option value="piece" ${parsed.unit === 'piece' ? 'selected' : ''}>Piece</option>
+                                        <option value="plate" ${parsed.unit === 'plate' ? 'selected' : ''}>Plate</option>
+                                        <option value="bowl" ${parsed.unit === 'bowl' ? 'selected' : ''}>Bowl</option>
+                                        <option value="katori" ${parsed.unit === 'katori' || parsed.unit === 'bowl' ? 'selected' : ''}>Katori (Bowl)</option>
+                                        <option value="cup" ${parsed.unit === 'cup' ? 'selected' : ''}>Cup</option>
+                                        <option value="slice" ${parsed.unit === 'slice' ? 'selected' : ''}>Slice</option>
+                                        <option value="tbsp" ${parsed.unit === 'tbsp' ? 'selected' : ''}>Tbsp</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="food-nutrition" id="nutrition-${index}">
+                                <div class="nutrition-values">
+                                    <div>${isComplete ? (parsed.food.cal * this.convertToGrams(parsed.quantity, parsed.unit) / this.convertToGrams(parsed.food.baseAmount, parsed.food.baseUnit)).toFixed(0) : '?'} cal</div>
+                                    <div>P: ${isComplete ? (parsed.food.protein * this.convertToGrams(parsed.quantity, parsed.unit) / this.convertToGrams(parsed.food.baseAmount, parsed.food.baseUnit)).toFixed(1) : '?'}g</div>
+                                    <div>C: ${isComplete ? (parsed.food.carbs * this.convertToGrams(parsed.quantity, parsed.unit) / this.convertToGrams(parsed.food.baseAmount, parsed.food.baseUnit)).toFixed(1) : '?'}g</div>
+                                    <div>F: ${isComplete ? (parsed.food.fat * this.convertToGrams(parsed.quantity, parsed.unit) / this.convertToGrams(parsed.food.baseAmount, parsed.food.baseUnit)).toFixed(1) : '?'}g</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                html += `<div style="display: flex; gap: 10px;">
+                    <button class="add-all-button" style="flex: 1;" onclick="app.addAllMeals()">✅ Add All Meals</button>
+                    <button class="add-all-button" style="flex: 1; background: #ff9800;" onclick="app.clearParsedFoods()">🔄 Clear All</button>
+                </div>`;
+                document.getElementById('parsedFoodsContainer').innerHTML = html;
+
+                // Attach input listeners for real-time nutrition update
+                foodItems.forEach((_, index) => {
+                    document.getElementById(`qty-${index}`).addEventListener('change', () => this.updateNutritionDisplay(index));
+                    document.getElementById(`unit-${index}`).addEventListener('change', () => this.updateNutritionDisplay(index));
+                });
+            },
+
+            editFoodName(index) {
+                const foodNameElement = document.getElementById(`foodname-${index}`);
+                const currentName = foodNameElement.textContent;
+                
+                // Create a container for input field and suggestions
+                const container = document.createElement('div');
+                container.style.position = 'relative';
+                container.style.width = '100%';
+                
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.value = currentName;
+                input.placeholder = 'Type food name...';
+                input.style.padding = '8px';
+                input.style.border = '2px solid #667eea';
+                input.style.borderRadius = '6px';
+                input.style.fontSize = '1em';
+                input.style.width = '100%';
+                input.autocomplete = 'off';
+                
+                const suggestionsDiv = document.createElement('div');
+                suggestionsDiv.style.position = 'absolute';
+                suggestionsDiv.style.top = '100%';
+                suggestionsDiv.style.left = '0';
+                suggestionsDiv.style.right = '0';
+                suggestionsDiv.style.background = 'white';
+                suggestionsDiv.style.border = '1px solid #ddd';
+                suggestionsDiv.style.borderRadius = '6px';
+                suggestionsDiv.style.maxHeight = '200px';
+                suggestionsDiv.style.overflowY = 'auto';
+                suggestionsDiv.style.zIndex = '1000';
+                suggestionsDiv.style.marginTop = '5px';
+                suggestionsDiv.style.display = 'none';
+                
+                input.addEventListener('input', (e) => {
+                    const searchTerm = e.target.value.toLowerCase();
+                    if (searchTerm.length < 1) {
+                        suggestionsDiv.style.display = 'none';
+                        return;
+                    }
+                    
+                    const matches = Object.values(FOOD_DATABASE)
+                        .filter(f => f.name.toLowerCase().includes(searchTerm))
+                        .slice(0, 5);
+                    
+                    if (matches.length === 0) {
+                        suggestionsDiv.style.display = 'none';
+                        return;
+                    }
+                    
+                    suggestionsDiv.innerHTML = matches.map(food => `
+                        <div style="padding: 8px; cursor: pointer; border-bottom: 1px solid #eee; hover: background: #f0f0f0;" 
+                             onclick="this.parentElement.style.display='none'; document.getElementById('foodname-${index}').textContent='${food.name}'; app.updateNutritionDisplay(${index});">
+                            ${food.name}
+                        </div>
+                    `).join('');
+                    suggestionsDiv.style.display = 'block';
+                });
+                
+                input.onblur = () => {
+                    setTimeout(() => {
+                        const newName = input.value.trim();
+                        if (newName) {
+                            let food = Object.values(FOOD_DATABASE).find(f => f.name.toLowerCase() === newName.toLowerCase());
+                            if (!food) {
+                                food = Object.values(FOOD_DATABASE).find(f => f.name.toLowerCase().includes(newName.toLowerCase()) || newName.toLowerCase().includes(f.name.toLowerCase()));
+                            }
+                            if (!food) {
+                                food = { name: newName, cal: 0, protein: 0, carbs: 0, fat: 0, baseUnit: 'g', baseAmount: 100 };
+                            }
+                            foodNameElement.textContent = food.name;
+                            this.updateNutritionDisplay(index);
+                        } else {
+                            foodNameElement.textContent = currentName;
+                        }
+                    }, 200);
+                };
+                
+                input.onkeypress = (e) => {
+                    if (e.key === 'Enter') {
+                        input.blur();
+                    }
+                };
+                
+                container.appendChild(input);
+                container.appendChild(suggestionsDiv);
+                foodNameElement.innerHTML = '';
+                foodNameElement.appendChild(container);
+                input.focus();
+                input.select();
+            },
+
+            removeParsedFood(index) {
+                const foodElement = document.getElementById(`food-${index}`);
+                if (foodElement) {
+                    foodElement.style.animation = 'fadeOut 0.3s ease-out';
+                    setTimeout(() => {
+                        foodElement.remove();
+                        // Check if there are any food items left
+                        const remainingFoods = document.querySelectorAll('.food-item').length;
+                        if (remainingFoods === 0) {
+                            document.getElementById('parsedFoodsContainer').innerHTML = '';
+                        }
+                    }, 300);
+                }
+            },
+
+            clearParsedFoods() {
+                if (confirm('Are you sure you want to clear all meals? This cannot be undone.')) {
+                    document.getElementById('parsedFoodsContainer').innerHTML = '';
+                    document.getElementById('textInput').value = '';
+                }
+            },
+
+            updateNutritionDisplay(index) {
+                const qty = parseFloat(document.getElementById(`qty-${index}`).value) || 0;
+                const unit = document.getElementById(`unit-${index}`).value;
+                const foodElement = document.getElementById(`food-${index}`);
+                const nutritionElement = document.getElementById(`nutrition-${index}`);
+
+                if (!foodElement) return;
+
+                // Find the food in the parsed items
+                const foodItems = document.getElementById('parsedFoodsContainer').querySelectorAll('.food-item');
+                let currentFood = null;
+
+                // We need to reconstruct the food object - this is a bit hacky but works
+                const foodName = foodElement.querySelector('.food-item-name').textContent;
+                currentFood = Object.values(FOOD_DATABASE).find(f => f.name === foodName);
+
+                if (!currentFood) return;
+
+                const multiplier = this.convertToGrams(qty, unit) / this.convertToGrams(currentFood.baseAmount, currentFood.baseUnit);
+                const cal = (currentFood.cal * multiplier).toFixed(0);
+                const protein = (currentFood.protein * multiplier).toFixed(1);
+                const carbs = (currentFood.carbs * multiplier).toFixed(1);
+                const fat = (currentFood.fat * multiplier).toFixed(1);
+
+                nutritionElement.innerHTML = `
+                    <div class="nutrition-values">
+                        <div>${cal} cal</div>
+                        <div>P: ${protein}g</div>
+                        <div>C: ${carbs}g</div>
+                        <div>F: ${fat}g</div>
+                    </div>
+                `;
+
+                // Update status
+                const statusElement = foodElement.querySelector('.food-status');
+                if (qty > 0) {
+                    foodElement.classList.remove('incomplete');
+                    foodElement.classList.add('complete');
+                    statusElement.textContent = '✅ Complete';
+                    statusElement.classList.remove('incomplete');
+                    statusElement.classList.add('complete');
+                } else {
+                    foodElement.classList.remove('complete');
+                    foodElement.classList.add('incomplete');
+                    statusElement.textContent = '⚠️ Missing portion';
+                    statusElement.classList.remove('complete');
+                    statusElement.classList.add('incomplete');
+                }
+            },
+
+            convertToGrams(amount, unit) {
+                const conversions = {
+                    'g': 1,
+                    'piece': 100,
+                    'plate': 300,
+                    'bowl': 250,
+                    'katori': 250,  // katori is same as bowl (Indian measurement)
+                    'cup': 240,
+                    'slice': 40,
+                    'tbsp': 15,
+                    'serve': 1,  // For AI suggested meals (already in correct amount)
+                };
+                return (amount || 0) * (conversions[unit] || 1);
+            },
+
+            parseFood(input) {
+                const lower = input.toLowerCase().trim();
+                
+                // Word to number conversion
+                const wordNumbers = {
+                    'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5,
+                    'six': 6, 'seven': 7, 'eight': 8, 'nine': 9, 'ten': 10,
+                    'a': 1, 'an': 1, 'couple': 2, 'few': 3, 'some': 1.5, 'half': 0.5
+                };
+
+                // Unit mappings - including Indian measurements
+                const unitMappings = {
+                    'g': 'g',
+                    'gr': 'g',
+                    'gram': 'g',
+                    'grams': 'g',
+                    'kg': 'g',
+                    'piece': 'piece',
+                    'pieces': 'piece',
+                    'pcs': 'piece',
+                    'pc': 'piece',
+                    'plate': 'plate',
+                    'plates': 'plate',
+                    'bowl': 'bowl',
+                    'bowls': 'bowl',
+                    'katori': 'bowl',
+                    'cup': 'cup',
+                    'cups': 'cup',
+                    'slice': 'slice',
+                    'slices': 'slice',
+                    'tbsp': 'tbsp',
+                    'tablespoon': 'tbsp',
+                    'tbsps': 'tbsp',
+                    'tsp': 'tbsp',
+                    'teaspoon': 'tbsp',
+                };
+
+                // Try to extract quantity and unit
+                let quantity = 0;
+                let unit = 'piece';
+                
+                // Remove "of" to handle "1 bowl of dal" pattern
+                let cleanedInput = lower.replace(/\s+of\s+/gi, ' ');
+                
+                // Try numeric quantity first
+                const numericMatch = cleanedInput.match(/(\d+(?:\.\d+)?)\s*(g|gr|gram|grams|kg|piece|pieces|pcs|pc|plate|plates|bowl|bowls|katori|cup|cups|slice|slices|tbsp|tablespoon|tbsps|tsp|teaspoon)?/i);
+                
+                if (numericMatch) {
+                    quantity = parseFloat(numericMatch[1]);
+                    if (numericMatch[2]) {
+                        const unitKey = numericMatch[2].toLowerCase();
+                        unit = unitMappings[unitKey] || 'piece';
+                    }
+                } else {
+                    // Try word-based quantity
+                    for (const [word, num] of Object.entries(wordNumbers)) {
+                        const wordPattern = new RegExp(`\\b${word}\\b`, 'i');
+                        if (wordPattern.test(cleanedInput)) {
+                            quantity = num;
+                            // Try to find unit after the number word
+                            const afterWordMatch = cleanedInput.match(new RegExp(`\\b${word}\\s+(${Object.keys(unitMappings).join('|')})`, 'i'));
+                            if (afterWordMatch) {
+                                unit = unitMappings[afterWordMatch[1].toLowerCase()] || 'piece';
+                            }
+                            break;
+                        }
+                    }
+                }
+
+                // Clean input for food name - remove quantity and unit
+                let foodQueryText = cleanedInput
+                    .replace(/^\d+(?:\.\d+)?\s*(?:g|gr|gram|grams|kg|piece|pieces|pcs|pc|plate|plates|bowl|bowls|katori|cup|cups|slice|slices|tbsp|tablespoon|tbsps|tsp|teaspoon)?\s*/i, '')
+                    .replace(/\b(?:one|two|three|four|five|six|seven|eight|nine|ten|a|an|couple|few|some|half)\b\s*(?:g|gr|gram|grams|kg|piece|pieces|pcs|pc|plate|plates|bowl|bowls|katori|cup|cups|slice|slices|tbsp|tablespoon|tbsps|tsp|teaspoon)?\s*/gi, '')
+                    .trim();
+                
+                // If empty after cleanup, use original
+                if (!foodQueryText || foodQueryText.length < 2) {
+                    foodQueryText = lower;
+                }
+
+                // Find the food in the database
+                let food = Object.values(FOOD_DATABASE).find(f => 
+                    f.name.toLowerCase() === foodQueryText || 
+                    foodQueryText.includes(f.name.toLowerCase()) ||
+                    f.name.toLowerCase().includes(foodQueryText)
+                );
+
+                // If not found, try fuzzy matching
+                if (!food) {
+                    food = Object.values(FOOD_DATABASE).find(f => 
+                        f.name.toLowerCase().startsWith(foodQueryText.split(' ')[0])
+                    );
+                }
+
+                // If still not found, create a placeholder
+                if (!food) {
+                    food = { name: foodQueryText, cal: 0, protein: 0, carbs: 0, fat: 0, baseUnit: 'g', baseAmount: 100 };
+                }
+
+                return { food, quantity, unit };
+            },
+
+            addAllMeals() {
+                const foodElements = document.querySelectorAll('.food-item');
+                let addedCount = 0;
+
+                foodElements.forEach((element, index) => {
+                    const qty = parseFloat(document.getElementById(`qty-${index}`).value);
+                    const unit = document.getElementById(`unit-${index}`).value;
+                    const foodName = element.querySelector('.food-item-name').textContent;
+
+                    if (qty && qty > 0) {
+                        const food = Object.values(FOOD_DATABASE).find(f => f.name === foodName);
+                        if (food) {
+                            this.addMeal(food, qty, unit);
+                            addedCount++;
+                        }
+                    }
+                });
+
+                if (addedCount > 0) {
+                    document.getElementById('parsedFoodsContainer').innerHTML = `<div class="success-message">✅ ${addedCount} meal(s) added successfully!</div>`;
+                    setTimeout(() => {
+                        document.getElementById('parsedFoodsContainer').innerHTML = '';
+                        this.updateUI();
+                    }, 2000);
+                }
+            },
+
+            addMeal(food, quantity, unit) {
+                const multiplier = this.convertToGrams(quantity, unit) / this.convertToGrams(food.baseAmount, food.baseUnit);
+                const meal = {
+                    id: Date.now(),
+                    name: food.name,
+                    quantity,
+                    unit,
+                    calories: Math.round(food.cal * multiplier),
+                    protein: Math.round(food.protein * multiplier * 10) / 10,
+                    carbs: Math.round(food.carbs * multiplier * 10) / 10,
+                    fat: Math.round(food.fat * multiplier * 10) / 10,
+                    time: this.getCurrentTime(),
+                };
+                this.meals.push(meal);
+                this.saveMealsToStorage();
+            },
+
+            deleteMeal(id) {
+                this.meals = this.meals.filter(m => m.id !== id);
+                this.saveMealsToStorage();
+                this.updateUI();
+            },
+
+            saveMealsToStorage() {
+                localStorage.setItem('healthtrack_meals', JSON.stringify(this.meals));
+            },
+
+            loadMealsFromStorage() {
+                const stored = localStorage.getItem('healthtrack_meals');
+                if (stored) {
+                    const data = JSON.parse(stored);
+                    // Only load meals from today
+                    const today = new Date().toDateString();
+                    this.meals = data.filter(m => new Date(m.time).toDateString() === today);
+                }
+            },
+
+            getCurrentTime() {
+                const now = new Date();
+                return now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+            },
+
+            updateUI() {
+                this.updateSummary();
+                this.updateMealLog();
+                // Suggestions are now updated asynchronously with API calls
+                this.updateSuggestions();
+            },
+
+            updateSummary() {
+                const totalCal = this.meals.reduce((sum, m) => sum + m.calories, 0);
+                const totalProtein = this.meals.reduce((sum, m) => sum + m.protein, 0);
+                const totalCarbs = this.meals.reduce((sum, m) => sum + m.carbs, 0);
+                const totalFat = this.meals.reduce((sum, m) => sum + m.fat, 0);
+
+                const goal = parseInt(document.getElementById('dailyGoal').value) || 2000;
+                const progress = Math.min((totalCal / goal) * 100, 100);
+
+                document.getElementById('totalCalories').textContent = totalCal;
+                document.getElementById('totalProtein').textContent = totalProtein.toFixed(1) + 'g';
+                document.getElementById('totalCarbs').textContent = totalCarbs.toFixed(1) + 'g';
+                document.getElementById('totalFat').textContent = totalFat.toFixed(1) + 'g';
+                document.getElementById('progressFill').style.width = progress + '%';
+                document.getElementById('progressText').textContent = progress.toFixed(0) + '% of daily goal';
+            },
+
+            updateMealLog() {
+                const logContainer = document.getElementById('mealLog');
+                if (this.meals.length === 0) {
+                    logContainer.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🍽️</div><p>No meals logged yet. Start by saying or typing what you ate!</p></div>';
+                    return;
+                }
+
+                let html = '';
+                this.meals.forEach(meal => {
+                    html += `
+                        <div class="meal-item">
+                            <div class="meal-details">
+                                <div class="meal-name">${meal.name}</div>
+                                <div class="meal-portion">${meal.quantity} ${meal.unit}</div>
+                                <div class="meal-nutrition">${meal.calories} cal | P: ${meal.protein}g | C: ${meal.carbs}g | F: ${meal.fat}g</div>
+                            </div>
+                            <div class="meal-time">${meal.time}</div>
+                            <button class="delete-btn" onclick="app.deleteMeal(${meal.id})">❌</button>
+                        </div>
+                    `;
+                });
+
+                logContainer.innerHTML = html;
+            },
+
+            updateSuggestions() {
+                const panel = document.getElementById('suggestionsPanel');
+                
+                // Show loading state
+                panel.innerHTML = '<h3>💡 Generating Suggestions...</h3><p style="color: #999; font-size: 0.9em;">Getting personalized meal recommendations based on your preferences...</p>';
+                
+                this.generateAISuggestions().then(meals => {
+                    let html = `<h3>💡 Smart Suggestions ${this.isApiConnected ? '<span class="ai-indicator active" style="margin-left: auto;">● AI Powered</span>' : '<span class="ai-indicator inactive">○ Local</span>'}</h3>`;
+                    
+                    if (meals.length === 0) {
+                        html += '<p style="color: #999;">No suggestions at the moment. Start logging meals!</p>';
+                    } else {
+                        meals.forEach(meal => {
+                            html += `
+                                <div class="suggested-meal" onclick="app.addQuickMeal('${meal.name.replace(/'/g, "\\'")}', ${meal.calories || 0}, ${meal.protein || 0})">
+                                    <div class="suggested-meal-name">${meal.name}</div>
+                                    <div class="suggested-meal-nutrition">${meal.calories || '?'} cal | P: ${meal.protein || '?'}g</div>
+                                    ${meal.reason ? `<div style="font-size: 0.8em; color: #999; margin-top: 6px; font-style: italic;">💡 ${meal.reason}</div>` : ''}
+                                </div>
+                            `;
+                        });
+                    }
+                    
+                    panel.innerHTML = html;
+                });
+            },
+
+            addQuickMeal(mealName, calories, protein) {
+                if (confirm(`Add "${mealName}" (${calories} cal) to today's log?`)) {
+                    const meal = {
+                        id: Date.now(),
+                        name: mealName,
+                        quantity: 1,
+                        unit: 'serve',
+                        calories: Math.round(calories),
+                        protein: Math.round(protein * 10) / 10,
+                        carbs: 0,
+                        fat: 0,
+                        time: this.getCurrentTime(),
+                    };
+                    this.meals.push(meal);
+                    this.saveMealsToStorage();
+                    this.updateUI();
+                }
+            },
+
+            generateLocalSuggestions() {
+                const suggestions = [];
+                const dietStatus = this.preferences.dietStatus;
+
+                if (dietStatus === 'junkfood') {
+                    suggestions.push(
+                        { name: 'Grilled Chicken Breast with Brown Rice', calories: 450, protein: 40 },
+                        { name: 'Grilled Fish with Vegetables', calories: 420, protein: 42 },
+                        { name: 'Dal with Quinoa', calories: 380, protein: 22 }
+                    );
+                } else if (dietStatus === 'needprotein') {
+                    suggestions.push(
+                        { name: 'Chicken Breast with Rice', calories: 500, protein: 45 },
+                        { name: 'Salmon with Sweet Potato', calories: 520, protein: 38 },
+                        { name: 'Egg White Omelet with Toast', calories: 380, protein: 30 }
+                    );
+                } else if (dietStatus === 'undereating') {
+                    suggestions.push(
+                        { name: 'Peanut Butter Sandwich', calories: 400, protein: 15 },
+                        { name: 'Banana with Almonds', calories: 350, protein: 12 },
+                        { name: 'Pasta with Olive Oil', calories: 450, protein: 16 }
+                    );
+                } else if (dietStatus === 'toolate') {
+                    suggestions.push(
+                        { name: 'Light Salad with Grilled Chicken', calories: 250, protein: 30 },
+                        { name: 'Vegetable Soup', calories: 100, protein: 5 },
+                        { name: 'Yogurt with Berries', calories: 150, protein: 12 }
+                    );
+                } else {
+                    suggestions.push(
+                        { name: 'Balanced Bowl (Chicken, Rice, Veggies)', calories: 500, protein: 35 },
+                        { name: 'Grilled Fish with Quinoa', calories: 480, protein: 38 },
+                        { name: 'Vegetable Stir-Fry with Tofu', calories: 350, protein: 22 }
+                    );
+                }
+
+                return suggestions;
+            },
+
+            togglePreference(type, value) {
+                if (type === 'preference') {
+                    this.preferences.preference = value;
+                }
+                document.querySelectorAll(`.chip[data-pref]`).forEach(chip => {
+                    if (chip.dataset.pref === value) {
+                        chip.classList.add('active');
+                    } else {
+                        chip.classList.remove('active');
+                    }
+                });
+                // Trigger AI suggestions when preference changes
+                this.updateSuggestions();
+            },
+
+            setDietStatus(status) {
+                this.preferences.dietStatus = status;
+                document.querySelectorAll('.status-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                event.target.closest('.status-option').classList.add('selected');
+                // Trigger AI suggestions when diet status changes
+                this.updateSuggestions();
+            },
+
+            updateIngredients() {
+                const input = document.getElementById('ingredientsInput').value;
+                this.preferences.ingredients = input.split(',').map(i => i.trim().toLowerCase()).filter(i => i);
+                // Trigger AI suggestions when ingredients change
+                this.updateSuggestions();
+            },
+
+            updateGoal() {
+                this.updateUI();
+            }
+        };
+
+        // Initialize app when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => app.init());
+    </script>
+</body>
+</html>

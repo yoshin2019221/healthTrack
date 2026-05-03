@@ -1,0 +1,404 @@
+Test 1: "2 rotis"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Roti","portion":2.0,"unit":"piece","food":{"name":"Roti","calories":106.0,"protein":3.0,"carbs":18.0,"fat":1.5,"baseUnit":"piece","baseAmount":1},"portionMissing":false}],"debugLog":["Fragment: \"2 rotis\" -> food=\"rotis\" portion=2.0 unit=null","  ✅ Matched \"Roti\" on \"roti\""],"count":1,"notFound":[]}
+
+Test 2: "3 eggs"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Egg","portion":3.0,"unit":"piece","food":{"name":"Egg","calories":143.0,"protein":12.6,"carbs":1.1,"fat":9.5,"baseUnit":"piece","baseAmount":1},"portionMissing":false}],"debugLog":["Fragment: \"3 eggs\" -> food=\"eggs\" portion=3.0 unit=null","  ✅ Matched \"Egg\" on \"egg\""],"count":1,"notFound":[]}
+
+Test 3: "200 grams chicken"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Chicken Thigh","portion":200.0,"unit":"g","food":{"name":"Chicken Thigh","calories":144.0,"protein":18.0,"carbs":0.0,"fat":7.5,"baseUnit":"g","baseAmount":100},"portionMissing":false}],"debugLog":["Fragment: \"200 grams chicken\" -> food=\"chicken\" portion=200.0 unit=g","  ✅ Matched \"Chicken Thigh\" on \"chicken\""],"count":1,"notFound":[]}
+
+Test 4: "1.5 cups rice"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Rice Flour","portion":1.5,"unit":"cup","food":{"name":"Rice Flour","calories":366.0,"protein":6.0,"carbs":80.0,"fat":1.0,"baseUnit":"g","baseAmount":100},"portionMissing":false}],"debugLog":["Fragment: \"1.5 cups rice\" -> food=\"rice\" portion=1.5 unit=cup","  ✅ Matched \"Rice Flour\" on \"rice\""],"count":1,"notFound":[]}
+
+Test 5: "0.5 bowl dal"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Dalia (Broken Wheat)","portion":0.5,"unit":"bowl","food":{"name":"Dalia (Broken Wheat)","calories":342.0,"protein":11.2,"carbs":71.0,"fat":2.0,"baseUnit":"g","baseAmount":100},"portionMissing":false}],"debugLog":["Fragment: \"0.5 bowl dal\" -> food=\"dal\" portion=0.5 unit=bowl","  ✅ Matched \"Dalia (Broken Wheat)\" on \"dal\""],"count":1,"notFound":[]}
+
+Test 6: "2.5 bowls milk"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Milk","portion":2.5,"unit":"bowl","food":{"name":"Milk","calories":61.0,"protein":3.2,"carbs":4.8,"fat":3.3,"baseUnit":"cup","baseAmount":1},"portionMissing":false}],"debugLog":["Fragment: \"2.5 bowls milk\" -> food=\"milk\" portion=2.5 unit=bowl","  ✅ Matched \"Milk\" on \"milk\""],"count":1,"notFound":[]}
+
+Test 7: "3.25 cups curd"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Curd","portion":3.25,"unit":"cup","food":{"name":"Curd","calories":60.0,"protein":3.1,"carbs":4.8,"fat":3.3,"baseUnit":"bowl","baseAmount":1},"portionMissing":false}],"debugLog":["Fragment: \"3.25 cups curd\" -> food=\"curd\" portion=3.25 unit=cup","  ✅ Matched \"Curd\" on \"curd\""],"count":1,"notFound":[]}
+
+Test 8: "0.75 plate food"
+  Found: 0 foods
+  Response: {"foods":[],"debugLog":["Fragment: \"0.75 plate food\" -> food=\"food\" portion=0.75 unit=plate","  ❌ Not found: \"food\""],"count":0,"notFound":["food"]}
+
+Test 9: "one apple"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Apple","portion":null,"unit":"g","food":{"name":"Apple","calories":59.0,"protein":0.2,"carbs":15.0,"fat":0.3,"baseUnit":"g","baseAmount":100},"portionMissing":true}],"debugLog":["Fragment: \"one apple\" -> food=\"apple\" portion=null unit=null","  ✅ Matched \"Apple\" on \"apple\""],"count":1,"notFound":[]}
+
+Test 10: "two oranges"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Orange Juice","portion":2.0,"unit":"cup","food":{"name":"Orange Juice","calories":45.0,"protein":0.7,"carbs":11.0,"fat":0.3,"baseUnit":"cup","baseAmount":1},"portionMissing":false}],"debugLog":["Fragment: \"two oranges\" -> food=\"oranges\" portion=2.0 unit=null","  ✅ Matched \"Orange Juice\" on \"orange\""],"count":1,"notFound":[]}
+
+Test 11: "three bananas"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Banana","portion":3.0,"unit":"piece","food":{"name":"Banana","calories":89.0,"protein":1.1,"carbs":23.0,"fat":0.3,"baseUnit":"piece","baseAmount":1},"portionMissing":false}],"debugLog":["Fragment: \"three bananas\" -> food=\"bananas\" portion=3.0 unit=null","  ✅ Matched \"Banana\" on \"banana\""],"count":1,"notFound":[]}
+
+Test 12: "five almonds"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Almond","portion":5.0,"unit":"g","food":{"name":"Almond","calories":598.0,"protein":20.8,"carbs":22.0,"fat":54.1,"baseUnit":"g","baseAmount":100},"portionMissing":false}],"debugLog":["Fragment: \"five almonds\" -> food=\"almonds\" portion=5.0 unit=null","  ✅ Matched \"Almond\" on \"almond\""],"count":1,"notFound":[]}
+
+Test 13: "dozen eggs"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Egg","portion":12.0,"unit":"piece","food":{"name":"Egg","calories":143.0,"protein":12.6,"carbs":1.1,"fat":9.5,"baseUnit":"piece","baseAmount":1},"portionMissing":false}],"debugLog":["Fragment: \"dozen eggs\" -> food=\"eggs\" portion=12.0 unit=null","  ✅ Matched \"Egg\" on \"egg\""],"count":1,"notFound":[]}
+
+Test 14: "1/2 cup milk"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Milk","portion":0.5,"unit":"cup","food":{"name":"Milk","calories":61.0,"protein":3.2,"carbs":4.8,"fat":3.3,"baseUnit":"cup","baseAmount":1},"portionMissing":false}],"debugLog":["Fragment: \"1/2 cup milk\" -> food=\"milk\" portion=0.5 unit=cup","  ✅ Matched \"Milk\" on \"milk\""],"count":1,"notFound":[]}
+
+Test 15: "3/4 bowl rice"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Rice Flour","portion":0.75,"unit":"bowl","food":{"name":"Rice Flour","calories":366.0,"protein":6.0,"carbs":80.0,"fat":1.0,"baseUnit":"g","baseAmount":100},"portionMissing":false}],"debugLog":["Fragment: \"3/4 bowl rice\" -> food=\"rice\" portion=0.75 unit=bowl","  ✅ Matched \"Rice Flour\" on \"rice\""],"count":1,"notFound":[]}
+
+Test 16: "1/4 kg chicken"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Chicken Thigh","portion":0.25,"unit":"kg","food":{"name":"Chicken Thigh","calories":144.0,"protein":18.0,"carbs":0.0,"fat":7.5,"baseUnit":"g","baseAmount":100},"portionMissing":false}],"debugLog":["Fragment: \"1/4 kg chicken\" -> food=\"chicken\" portion=0.25 unit=kg","  ✅ Matched \"Chicken Thigh\" on \"chicken\""],"count":1,"notFound":[]}
+
+Test 17: "2/3 plate dal"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Dalia (Broken Wheat)","portion":0.6666666666666666,"unit":"plate","food":{"name":"Dalia (Broken Wheat)","calories":342.0,"protein":11.2,"carbs":71.0,"fat":2.0,"baseUnit":"g","baseAmount":100},"portionMissing":false}],"debugLog":["Fragment: \"2/3 plate dal\" -> food=\"dal\" portion=0.6666666666666666 unit=plate","  ✅ Matched \"Dalia (Broken Wheat)\" on \"dal\""],"count":1,"notFound":[]}
+
+Test 18: "one and a half cup milk"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Milk","portion":0.5,"unit":"cup","food":{"name":"Milk","calories":61.0,"protein":3.2,"carbs":4.8,"fat":3.3,"baseUnit":"cup","baseAmount":1},"portionMissing":false}],"debugLog":["Skipped (no food): \"one\"","Fragment: \"a half cup milk\" -> food=\"milk\" portion=0.5 unit=cup","  ✅ Matched \"Milk\" on \"milk\""],"count":1,"notFound":[]}
+
+Test 19: "one and a half bowl curd"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Curd","portion":0.5,"unit":"bowl","food":{"name":"Curd","calories":60.0,"protein":3.1,"carbs":4.8,"fat":3.3,"baseUnit":"bowl","baseAmount":1},"portionMissing":false}],"debugLog":["Skipped (no food): \"one\"","Fragment: \"a half bowl curd\" -> food=\"curd\" portion=0.5 unit=bowl","  ✅ Matched \"Curd\" on \"curd\""],"count":1,"notFound":[]}
+
+Test 20: "two and a half rotis"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Roti","portion":0.5,"unit":"piece","food":{"name":"Roti","calories":106.0,"protein":3.0,"carbs":18.0,"fat":1.5,"baseUnit":"piece","baseAmount":1},"portionMissing":false}],"debugLog":["Skipped (no food): \"two\"","Fragment: \"a half rotis\" -> food=\"rotis\" portion=0.5 unit=null","  ✅ Matched \"Roti\" on \"roti\""],"count":1,"notFound":[]}
+
+Test 21: "200g chicken"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Chicken Thigh","portion":200.0,"unit":"g","food":{"name":"Chicken Thigh","calories":144.0,"protein":18.0,"carbs":0.0,"fat":7.5,"baseUnit":"g","baseAmount":100},"portionMissing":false}],"debugLog":["Fragment: \"200g chicken\" -> food=\"chicken\" portion=200.0 unit=g","  ✅ Matched \"Chicken Thigh\" on \"chicken\""],"count":1,"notFound":[]}
+
+Test 22: "150ml milk"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Milk","portion":150.0,"unit":"ml","food":{"name":"Milk","calories":61.0,"protein":3.2,"carbs":4.8,"fat":3.3,"baseUnit":"cup","baseAmount":1},"portionMissing":false}],"debugLog":["Fragment: \"150ml milk\" -> food=\"milk\" portion=150.0 unit=ml","  ✅ Matched \"Milk\" on \"milk\""],"count":1,"notFound":[]}
+
+Test 23: "300gm paneer"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Paneer (Buffalo)","portion":300.0,"unit":"g","food":{"name":"Paneer (Buffalo)","calories":290.0,"protein":17.5,"carbs":2.0,"fat":22.5,"baseUnit":"g","baseAmount":100},"portionMissing":false}],"debugLog":["Fragment: \"300gm paneer\" -> food=\"paneer\" portion=300.0 unit=g","  ✅ Matched \"Paneer (Buffalo)\" on \"paneer\""],"count":1,"notFound":[]}
+
+Test 24: "2kg rice"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Rice Flour","portion":2.0,"unit":"kg","food":{"name":"Rice Flour","calories":366.0,"protein":6.0,"carbs":80.0,"fat":1.0,"baseUnit":"g","baseAmount":100},"portionMissing":false}],"debugLog":["Fragment: \"2kg rice\" -> food=\"rice\" portion=2.0 unit=kg","  ✅ Matched \"Rice Flour\" on \"rice\""],"count":1,"notFound":[]}
+
+Test 25: "500ml water"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Watermelon","portion":500.0,"unit":"ml","food":{"name":"Watermelon","calories":30.0,"protein":0.6,"carbs":8.0,"fat":0.2,"baseUnit":"g","baseAmount":100},"portionMissing":false}],"debugLog":["Fragment: \"500ml water\" -> food=\"water\" portion=500.0 unit=ml","  ✅ Matched \"Watermelon\" on \"water\""],"count":1,"notFound":[]}
+
+Test 26: "1 bowl curd"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Curd","portion":1.0,"unit":"bowl","food":{"name":"Curd","calories":60.0,"protein":3.1,"carbs":4.8,"fat":3.3,"baseUnit":"bowl","baseAmount":1},"portionMissing":false}],"debugLog":["Fragment: \"1 bowl curd\" -> food=\"curd\" portion=1.0 unit=bowl","  ✅ Matched \"Curd\" on \"curd\""],"count":1,"notFound":[]}
+
+Test 27: "2 pieces bread"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Rye Bread","portion":2.0,"unit":"g","food":{"name":"Rye Bread","calories":259.0,"protein":8.5,"carbs":49.0,"fat":3.3,"baseUnit":"g","baseAmount":100},"portionMissing":false}],"debugLog":["Fragment: \"2 pieces bread\" -> food=\"bread\" portion=2.0 unit=null","  ✅ Matched \"Rye Bread\" on \"bread\""],"count":1,"notFound":[]}
+
+Test 28: "3 cups milk"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Milk","portion":3.0,"unit":"cup","food":{"name":"Milk","calories":61.0,"protein":3.2,"carbs":4.8,"fat":3.3,"baseUnit":"cup","baseAmount":1},"portionMissing":false}],"debugLog":["Fragment: \"3 cups milk\" -> food=\"milk\" portion=3.0 unit=cup","  ✅ Matched \"Milk\" on \"milk\""],"count":1,"notFound":[]}
+
+Test 29: "4 tbsp butter"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Butter Chicken","portion":4.0,"unit":"tbsp","food":{"name":"Butter Chicken","calories":195.0,"protein":15.0,"carbs":10.0,"fat":11.0,"baseUnit":"bowl","baseAmount":1},"portionMissing":false}],"debugLog":["Fragment: \"4 tbsp butter\" -> food=\"butter\" portion=4.0 unit=tbsp","  ✅ Matched \"Butter Chicken\" on \"butter\""],"count":1,"notFound":[]}
+
+Test 30: "5 tsp sugar"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Sugarcane Juice","portion":5.0,"unit":"tsp","food":{"name":"Sugarcane Juice","calories":40.0,"protein":0.1,"carbs":10.0,"fat":0.1,"baseUnit":"glass","baseAmount":1},"portionMissing":false}],"debugLog":["Fragment: \"5 tsp sugar\" -> food=\"sugar\" portion=5.0 unit=tsp","  ✅ Matched \"Sugarcane Juice\" on \"sugar\""],"count":1,"notFound":[]}
+
+Test 31: "6 glasses water"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Watermelon","portion":6.0,"unit":"glass","food":{"name":"Watermelon","calories":30.0,"protein":0.6,"carbs":8.0,"fat":0.2,"baseUnit":"g","baseAmount":100},"portionMissing":false}],"debugLog":["Fragment: \"6 glasses water\" -> food=\"water\" portion=6.0 unit=glass","  ✅ Matched \"Watermelon\" on \"water\""],"count":1,"notFound":[]}
+
+Test 32: "7 plates food"
+  Found: 0 foods
+  Response: {"foods":[],"debugLog":["Fragment: \"7 plates food\" -> food=\"food\" portion=7.0 unit=plate","  ❌ Not found: \"food\""],"count":0,"notFound":["food"]}
+
+Test 33: "1 handful almonds"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Almond","portion":1.0,"unit":"handful","food":{"name":"Almond","calories":598.0,"protein":20.8,"carbs":22.0,"fat":54.1,"baseUnit":"g","baseAmount":100},"portionMissing":false}],"debugLog":["Fragment: \"1 handful almonds\" -> food=\"almonds\" portion=1.0 unit=handful","  ✅ Matched \"Almond\" on \"almond\""],"count":1,"notFound":[]}
+
+Test 34: "2 scoops ice cream"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Rice Flour","portion":2.0,"unit":"scoop","food":{"name":"Rice Flour","calories":366.0,"protein":6.0,"carbs":80.0,"fat":1.0,"baseUnit":"g","baseAmount":100},"portionMissing":false}],"debugLog":["Fragment: \"2 scoops ice cream\" -> food=\"ice cream\" portion=2.0 unit=scoop","  ✅ Matched \"Rice Flour\" on \"ice\""],"count":1,"notFound":[]}
+
+Test 35: "1 slice cake"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Cake","portion":1.0,"unit":"slice","food":{"name":"Cake","calories":320.0,"protein":4.0,"carbs":45.0,"fat":14.0,"baseUnit":"piece","baseAmount":1},"portionMissing":false}],"debugLog":["Fragment: \"1 slice cake\" -> food=\"cake\" portion=1.0 unit=slice","  ✅ Matched \"Cake\" on \"cake\""],"count":1,"notFound":[]}
+
+Test 36: "apple"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Apple","portion":null,"unit":"g","food":{"name":"Apple","calories":59.0,"protein":0.2,"carbs":15.0,"fat":0.3,"baseUnit":"g","baseAmount":100},"portionMissing":true}],"debugLog":["Fragment: \"apple\" -> food=\"apple\" portion=null unit=null","  ✅ Matched \"Apple\" on \"apple\""],"count":1,"notFound":[]}
+
+Test 37: "banana"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Banana","portion":null,"unit":"piece","food":{"name":"Banana","calories":89.0,"protein":1.1,"carbs":23.0,"fat":0.3,"baseUnit":"piece","baseAmount":1},"portionMissing":true}],"debugLog":["Fragment: \"banana\" -> food=\"banana\" portion=null unit=null","  ✅ Matched \"Banana\" on \"banana\""],"count":1,"notFound":[]}
+
+Test 38: "chicken"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Chicken Thigh","portion":null,"unit":"g","food":{"name":"Chicken Thigh","calories":144.0,"protein":18.0,"carbs":0.0,"fat":7.5,"baseUnit":"g","baseAmount":100},"portionMissing":true}],"debugLog":["Fragment: \"chicken\" -> food=\"chicken\" portion=null unit=null","  ✅ Matched \"Chicken Thigh\" on \"chicken\""],"count":1,"notFound":[]}
+
+Test 39: "rice"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Rice Flour","portion":null,"unit":"g","food":{"name":"Rice Flour","calories":366.0,"protein":6.0,"carbs":80.0,"fat":1.0,"baseUnit":"g","baseAmount":100},"portionMissing":true}],"debugLog":["Fragment: \"rice\" -> food=\"rice\" portion=null unit=null","  ✅ Matched \"Rice Flour\" on \"rice\""],"count":1,"notFound":[]}
+
+Test 40: "bread"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Rye Bread","portion":null,"unit":"g","food":{"name":"Rye Bread","calories":259.0,"protein":8.5,"carbs":49.0,"fat":3.3,"baseUnit":"g","baseAmount":100},"portionMissing":true}],"debugLog":["Fragment: \"bread\" -> food=\"bread\" portion=null unit=null","  ✅ Matched \"Rye Bread\" on \"bread\""],"count":1,"notFound":[]}
+
+Test 41: "milk"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Milk","portion":null,"unit":"cup","food":{"name":"Milk","calories":61.0,"protein":3.2,"carbs":4.8,"fat":3.3,"baseUnit":"cup","baseAmount":1},"portionMissing":true}],"debugLog":["Fragment: \"milk\" -> food=\"milk\" portion=null unit=null","  ✅ Matched \"Milk\" on \"milk\""],"count":1,"notFound":[]}
+
+Test 42: "curd"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Curd","portion":null,"unit":"bowl","food":{"name":"Curd","calories":60.0,"protein":3.1,"carbs":4.8,"fat":3.3,"baseUnit":"bowl","baseAmount":1},"portionMissing":true}],"debugLog":["Fragment: \"curd\" -> food=\"curd\" portion=null unit=null","  ✅ Matched \"Curd\" on \"curd\""],"count":1,"notFound":[]}
+
+Test 43: "paneer"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Paneer (Buffalo)","portion":null,"unit":"g","food":{"name":"Paneer (Buffalo)","calories":290.0,"protein":17.5,"carbs":2.0,"fat":22.5,"baseUnit":"g","baseAmount":100},"portionMissing":true}],"debugLog":["Fragment: \"paneer\" -> food=\"paneer\" portion=null unit=null","  ✅ Matched \"Paneer (Buffalo)\" on \"paneer\""],"count":1,"notFound":[]}
+
+Test 44: "dal"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Dalia (Broken Wheat)","portion":null,"unit":"g","food":{"name":"Dalia (Broken Wheat)","calories":342.0,"protein":11.2,"carbs":71.0,"fat":2.0,"baseUnit":"g","baseAmount":100},"portionMissing":true}],"debugLog":["Fragment: \"dal\" -> food=\"dal\" portion=null unit=null","  ✅ Matched \"Dalia (Broken Wheat)\" on \"dal\""],"count":1,"notFound":[]}
+
+Test 45: "chapati"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Chapati","portion":null,"unit":"piece","food":{"name":"Chapati","calories":106.0,"protein":3.0,"carbs":18.0,"fat":1.5,"baseUnit":"piece","baseAmount":1},"portionMissing":true}],"debugLog":["Fragment: \"chapati\" -> food=\"chapati\" portion=null unit=null","  ✅ Matched \"Chapati\" on \"chapati\""],"count":1,"notFound":[]}
+
+Test 46: "2 rotis, 1 bowl dal, 200g chicken"
+  Found: 3 foods
+  Response: {"foods":[{"name":"Roti","portion":2.0,"unit":"piece","food":{"name":"Roti","calories":106.0,"protein":3.0,"carbs":18.0,"fat":1.5,"baseUnit":"piece","baseAmount":1},"portionMissing":false},{"name":"Dalia (Broken Wheat)","portion":1.0,"unit":"bowl","food":{"name":"Dalia (Broken Wheat)","calories":342.0,"protein":11.2,"carbs":71.0,"fat":2.0,"baseUnit":"g","baseAmount":100},"portionMissing":false},{"name":"Chicken Thigh","portion":200.0,"unit":"g","food":{"name":"Chicken Thigh","calories":144.0,"protein":18.0,"carbs":0.0,"fat":7.5,"baseUnit":"g","baseAmount":100},"portionMissing":false}],"debugLog":["Fragment: \"2 rotis\" -> food=\"rotis\" portion=2.0 unit=null","  ✅ Matched \"Roti\" on \"roti\"","Fragment: \"1 bowl dal\" -> food=\"dal\" portion=1.0 unit=bowl","  ✅ Matched \"Dalia (Broken Wheat)\" on \"dal\"","Fragment: \"200g chicken\" -> food=\"chicken\" portion=200.0 unit=g","  ✅ Matched \"Chicken Thigh\" on \"chicken\""],"count":3,"notFound":[]}
+
+Test 47: "3 eggs, 1 apple, 1 glass milk"
+  Found: 3 foods
+  Response: {"foods":[{"name":"Egg","portion":3.0,"unit":"piece","food":{"name":"Egg","calories":143.0,"protein":12.6,"carbs":1.1,"fat":9.5,"baseUnit":"piece","baseAmount":1},"portionMissing":false},{"name":"Apple","portion":1.0,"unit":"g","food":{"name":"Apple","calories":59.0,"protein":0.2,"carbs":15.0,"fat":0.3,"baseUnit":"g","baseAmount":100},"portionMissing":false},{"name":"Milk","portion":1.0,"unit":"glass","food":{"name":"Milk","calories":61.0,"protein":3.2,"carbs":4.8,"fat":3.3,"baseUnit":"cup","baseAmount":1},"portionMissing":false}],"debugLog":["Fragment: \"3 eggs\" -> food=\"eggs\" portion=3.0 unit=null","  ✅ Matched \"Egg\" on \"egg\"","Fragment: \"1 apple\" -> food=\"apple\" portion=1.0 unit=null","  ✅ Matched \"Apple\" on \"apple\"","Fragment: \"1 glass milk\" -> food=\"milk\" portion=1.0 unit=glass","  ✅ Matched \"Milk\" on \"milk\""],"count":3,"notFound":[]}
+
+Test 48: "100g paneer, 2 cups rice, 1 tomato"
+  Found: 3 foods
+  Response: {"foods":[{"name":"Paneer (Buffalo)","portion":100.0,"unit":"g","food":{"name":"Paneer (Buffalo)","calories":290.0,"protein":17.5,"carbs":2.0,"fat":22.5,"baseUnit":"g","baseAmount":100},"portionMissing":false},{"name":"Rice Flour","portion":2.0,"unit":"cup","food":{"name":"Rice Flour","calories":366.0,"protein":6.0,"carbs":80.0,"fat":1.0,"baseUnit":"g","baseAmount":100},"portionMissing":false},{"name":"Tomato","portion":1.0,"unit":"g","food":{"name":"Tomato","calories":18.0,"protein":0.9,"carbs":4.0,"fat":0.2,"baseUnit":"g","baseAmount":100},"portionMissing":false}],"debugLog":["Fragment: \"100g paneer\" -> food=\"paneer\" portion=100.0 unit=g","  ✅ Matched \"Paneer (Buffalo)\" on \"paneer\"","Fragment: \"2 cups rice\" -> food=\"rice\" portion=2.0 unit=cup","  ✅ Matched \"Rice Flour\" on \"rice\"","Fragment: \"1 tomato\" -> food=\"tomato\" portion=1.0 unit=null","  ✅ Matched \"Tomato\" on \"tomato\""],"count":3,"notFound":[]}
+
+Test 49: "2 rotis and 1 bowl dal and 200g chicken curry"
+  Found: 3 foods
+  Response: {"foods":[{"name":"Roti","portion":2.0,"unit":"piece","food":{"name":"Roti","calories":106.0,"protein":3.0,"carbs":18.0,"fat":1.5,"baseUnit":"piece","baseAmount":1},"portionMissing":false},{"name":"Dalia (Broken Wheat)","portion":1.0,"unit":"bowl","food":{"name":"Dalia (Broken Wheat)","calories":342.0,"protein":11.2,"carbs":71.0,"fat":2.0,"baseUnit":"g","baseAmount":100},"portionMissing":false},{"name":"Chicken Curry","portion":200.0,"unit":"g","food":{"name":"Chicken Curry","calories":165.0,"protein":15.0,"carbs":8.0,"fat":8.0,"baseUnit":"bowl","baseAmount":1},"portionMissing":false}],"debugLog":["Fragment: \"2 rotis\" -> food=\"rotis\" portion=2.0 unit=null","  ✅ Matched \"Roti\" on \"roti\"","Fragment: \"1 bowl dal\" -> food=\"dal\" portion=1.0 unit=bowl","  ✅ Matched \"Dalia (Broken Wheat)\" on \"dal\"","Fragment: \"200g chicken curry\" -> food=\"chicken curry\" portion=200.0 unit=g","  ✅ Matched \"Chicken Curry\" on \"chicken curry\""],"count":3,"notFound":[]}
+
+Test 50: "1 apple and 1 banana and 1 orange"
+  Found: 3 foods
+  Response: {"foods":[{"name":"Apple","portion":1.0,"unit":"g","food":{"name":"Apple","calories":59.0,"protein":0.2,"carbs":15.0,"fat":0.3,"baseUnit":"g","baseAmount":100},"portionMissing":false},{"name":"Banana","portion":1.0,"unit":"piece","food":{"name":"Banana","calories":89.0,"protein":1.1,"carbs":23.0,"fat":0.3,"baseUnit":"piece","baseAmount":1},"portionMissing":false},{"name":"Orange Juice","portion":1.0,"unit":"cup","food":{"name":"Orange Juice","calories":45.0,"protein":0.7,"carbs":11.0,"fat":0.3,"baseUnit":"cup","baseAmount":1},"portionMissing":false}],"debugLog":["Fragment: \"1 apple\" -> food=\"apple\" portion=1.0 unit=null","  ✅ Matched \"Apple\" on \"apple\"","Fragment: \"1 banana\" -> food=\"banana\" portion=1.0 unit=null","  ✅ Matched \"Banana\" on \"banana\"","Fragment: \"1 orange\" -> food=\"orange\" portion=1.0 unit=null","  ✅ Matched \"Orange Juice\" on \"orange\""],"count":3,"notFound":[]}
+
+Test 51: "3 eggs and 2 slices bread and 1 cup milk"
+  Found: 3 foods
+  Response: {"foods":[{"name":"Egg","portion":3.0,"unit":"piece","food":{"name":"Egg","calories":143.0,"protein":12.6,"carbs":1.1,"fat":9.5,"baseUnit":"piece","baseAmount":1},"portionMissing":false},{"name":"Rye Bread","portion":2.0,"unit":"slice","food":{"name":"Rye Bread","calories":259.0,"protein":8.5,"carbs":49.0,"fat":3.3,"baseUnit":"g","baseAmount":100},"portionMissing":false},{"name":"Milk","portion":1.0,"unit":"cup","food":{"name":"Milk","calories":61.0,"protein":3.2,"carbs":4.8,"fat":3.3,"baseUnit":"cup","baseAmount":1},"portionMissing":false}],"debugLog":["Fragment: \"3 eggs\" -> food=\"eggs\" portion=3.0 unit=null","  ✅ Matched \"Egg\" on \"egg\"","Fragment: \"2 slices bread\" -> food=\"bread\" portion=2.0 unit=slice","  ✅ Matched \"Rye Bread\" on \"bread\"","Fragment: \"1 cup milk\" -> food=\"milk\" portion=1.0 unit=cup","  ✅ Matched \"Milk\" on \"milk\""],"count":3,"notFound":[]}
+
+Test 52: "2 rotis with 1 bowl dal with 200g chicken"
+  Found: 3 foods
+  Response: {"foods":[{"name":"Roti","portion":2.0,"unit":"piece","food":{"name":"Roti","calories":106.0,"protein":3.0,"carbs":18.0,"fat":1.5,"baseUnit":"piece","baseAmount":1},"portionMissing":false},{"name":"Dalia (Broken Wheat)","portion":1.0,"unit":"bowl","food":{"name":"Dalia (Broken Wheat)","calories":342.0,"protein":11.2,"carbs":71.0,"fat":2.0,"baseUnit":"g","baseAmount":100},"portionMissing":false},{"name":"Chicken Thigh","portion":200.0,"unit":"g","food":{"name":"Chicken Thigh","calories":144.0,"protein":18.0,"carbs":0.0,"fat":7.5,"baseUnit":"g","baseAmount":100},"portionMissing":false}],"debugLog":["Fragment: \"2 rotis\" -> food=\"rotis\" portion=2.0 unit=null","  ✅ Matched \"Roti\" on \"roti\"","Fragment: \"1 bowl dal\" -> food=\"dal\" portion=1.0 unit=bowl","  ✅ Matched \"Dalia (Broken Wheat)\" on \"dal\"","Fragment: \"200g chicken\" -> food=\"chicken\" portion=200.0 unit=g","  ✅ Matched \"Chicken Thigh\" on \"chicken\""],"count":3,"notFound":[]}
+
+Test 53: "1 bowl curd with 1 apple"
+  Found: 2 foods
+  Response: {"foods":[{"name":"Curd","portion":1.0,"unit":"bowl","food":{"name":"Curd","calories":60.0,"protein":3.1,"carbs":4.8,"fat":3.3,"baseUnit":"bowl","baseAmount":1},"portionMissing":false},{"name":"Apple","portion":1.0,"unit":"g","food":{"name":"Apple","calories":59.0,"protein":0.2,"carbs":15.0,"fat":0.3,"baseUnit":"g","baseAmount":100},"portionMissing":false}],"debugLog":["Fragment: \"1 bowl curd\" -> food=\"curd\" portion=1.0 unit=bowl","  ✅ Matched \"Curd\" on \"curd\"","Fragment: \"1 apple\" -> food=\"apple\" portion=1.0 unit=null","  ✅ Matched \"Apple\" on \"apple\""],"count":2,"notFound":[]}
+
+Test 54: "3 eggs with bread and butter"
+  Found: 3 foods
+  Response: {"foods":[{"name":"Egg","portion":3.0,"unit":"piece","food":{"name":"Egg","calories":143.0,"protein":12.6,"carbs":1.1,"fat":9.5,"baseUnit":"piece","baseAmount":1},"portionMissing":false},{"name":"Rye Bread","portion":null,"unit":"g","food":{"name":"Rye Bread","calories":259.0,"protein":8.5,"carbs":49.0,"fat":3.3,"baseUnit":"g","baseAmount":100},"portionMissing":true},{"name":"Butter Chicken","portion":null,"unit":"bowl","food":{"name":"Butter Chicken","calories":195.0,"protein":15.0,"carbs":10.0,"fat":11.0,"baseUnit":"bowl","baseAmount":1},"portionMissing":true}],"debugLog":["Fragment: \"3 eggs\" -> food=\"eggs\" portion=3.0 unit=null","  ✅ Matched \"Egg\" on \"egg\"","Fragment: \"bread\" -> food=\"bread\" portion=null unit=null","  ✅ Matched \"Rye Bread\" on \"bread\"","Fragment: \"butter\" -> food=\"butter\" portion=null unit=null","  ✅ Matched \"Butter Chicken\" on \"butter\""],"count":3,"notFound":[]}
+
+Test 55: "1 cup rice plus 200g chicken plus 1 bowl curd"
+  Found: 3 foods
+  Response: {"foods":[{"name":"Rice Flour","portion":1.0,"unit":"cup","food":{"name":"Rice Flour","calories":366.0,"protein":6.0,"carbs":80.0,"fat":1.0,"baseUnit":"g","baseAmount":100},"portionMissing":false},{"name":"Chicken Thigh","portion":200.0,"unit":"g","food":{"name":"Chicken Thigh","calories":144.0,"protein":18.0,"carbs":0.0,"fat":7.5,"baseUnit":"g","baseAmount":100},"portionMissing":false},{"name":"Curd","portion":1.0,"unit":"bowl","food":{"name":"Curd","calories":60.0,"protein":3.1,"carbs":4.8,"fat":3.3,"baseUnit":"bowl","baseAmount":1},"portionMissing":false}],"debugLog":["Fragment: \"1 cup rice\" -> food=\"rice\" portion=1.0 unit=cup","  ✅ Matched \"Rice Flour\" on \"rice\"","Fragment: \"200g chicken\" -> food=\"chicken\" portion=200.0 unit=g","  ✅ Matched \"Chicken Thigh\" on \"chicken\"","Fragment: \"1 bowl curd\" -> food=\"curd\" portion=1.0 unit=bowl","  ✅ Matched \"Curd\" on \"curd\""],"count":3,"notFound":[]}
+
+Test 56: "2 rotis plus 1 bowl dal plus spinach"
+  Found: 3 foods
+  Response: {"foods":[{"name":"Roti","portion":2.0,"unit":"piece","food":{"name":"Roti","calories":106.0,"protein":3.0,"carbs":18.0,"fat":1.5,"baseUnit":"piece","baseAmount":1},"portionMissing":false},{"name":"Dalia (Broken Wheat)","portion":1.0,"unit":"bowl","food":{"name":"Dalia (Broken Wheat)","calories":342.0,"protein":11.2,"carbs":71.0,"fat":2.0,"baseUnit":"g","baseAmount":100},"portionMissing":false},{"name":"Spinach","portion":null,"unit":"g","food":{"name":"Spinach","calories":23.0,"protein":2.9,"carbs":4.0,"fat":0.4,"baseUnit":"g","baseAmount":100},"portionMissing":true}],"debugLog":["Fragment: \"2 rotis\" -> food=\"rotis\" portion=2.0 unit=null","  ✅ Matched \"Roti\" on \"roti\"","Fragment: \"1 bowl dal\" -> food=\"dal\" portion=1.0 unit=bowl","  ✅ Matched \"Dalia (Broken Wheat)\" on \"dal\"","Fragment: \"spinach\" -> food=\"spinach\" portion=null unit=null","  ✅ Matched \"Spinach\" on \"spinach\""],"count":3,"notFound":[]}
+
+Test 57: "1 bowl rice, 200g chicken with curd and apple"
+  Found: 4 foods
+  Response: {"foods":[{"name":"Rice Flour","portion":1.0,"unit":"bowl","food":{"name":"Rice Flour","calories":366.0,"protein":6.0,"carbs":80.0,"fat":1.0,"baseUnit":"g","baseAmount":100},"portionMissing":false},{"name":"Chicken Thigh","portion":200.0,"unit":"g","food":{"name":"Chicken Thigh","calories":144.0,"protein":18.0,"carbs":0.0,"fat":7.5,"baseUnit":"g","baseAmount":100},"portionMissing":false},{"name":"Curd","portion":null,"unit":"bowl","food":{"name":"Curd","calories":60.0,"protein":3.1,"carbs":4.8,"fat":3.3,"baseUnit":"bowl","baseAmount":1},"portionMissing":true},{"name":"Apple","portion":null,"unit":"g","food":{"name":"Apple","calories":59.0,"protein":0.2,"carbs":15.0,"fat":0.3,"baseUnit":"g","baseAmount":100},"portionMissing":true}],"debugLog":["Fragment: \"1 bowl rice\" -> food=\"rice\" portion=1.0 unit=bowl","  ✅ Matched \"Rice Flour\" on \"rice\"","Fragment: \"200g chicken\" -> food=\"chicken\" portion=200.0 unit=g","  ✅ Matched \"Chicken Thigh\" on \"chicken\"","Fragment: \"curd\" -> food=\"curd\" portion=null unit=null","  ✅ Matched \"Curd\" on \"curd\"","Fragment: \"apple\" -> food=\"apple\" portion=null unit=null","  ✅ Matched \"Apple\" on \"apple\""],"count":4,"notFound":[]}
+
+Test 58: "2 rotis + 1 bowl dal + some curd"
+  Found: 3 foods
+  Response: {"foods":[{"name":"Roti","portion":2.0,"unit":"piece","food":{"name":"Roti","calories":106.0,"protein":3.0,"carbs":18.0,"fat":1.5,"baseUnit":"piece","baseAmount":1},"portionMissing":false},{"name":"Dalia (Broken Wheat)","portion":1.0,"unit":"bowl","food":{"name":"Dalia (Broken Wheat)","calories":342.0,"protein":11.2,"carbs":71.0,"fat":2.0,"baseUnit":"g","baseAmount":100},"portionMissing":false},{"name":"Curd","portion":null,"unit":"bowl","food":{"name":"Curd","calories":60.0,"protein":3.1,"carbs":4.8,"fat":3.3,"baseUnit":"bowl","baseAmount":1},"portionMissing":true}],"debugLog":["Fragment: \"2 rotis\" -> food=\"rotis\" portion=2.0 unit=null","  ✅ Matched \"Roti\" on \"roti\"","Fragment: \"1 bowl dal\" -> food=\"dal\" portion=1.0 unit=bowl","  ✅ Matched \"Dalia (Broken Wheat)\" on \"dal\"","Fragment: \"some curd\" -> food=\"curd\" portion=null unit=null","  ✅ Matched \"Curd\" on \"curd\""],"count":3,"notFound":[]}
+
+Test 59: "3 eggs, 1 apple & 1 glass milk"
+  Found: 3 foods
+  Response: {"foods":[{"name":"Egg","portion":3.0,"unit":"piece","food":{"name":"Egg","calories":143.0,"protein":12.6,"carbs":1.1,"fat":9.5,"baseUnit":"piece","baseAmount":1},"portionMissing":false},{"name":"Apple","portion":1.0,"unit":"g","food":{"name":"Apple","calories":59.0,"protein":0.2,"carbs":15.0,"fat":0.3,"baseUnit":"g","baseAmount":100},"portionMissing":false},{"name":"Milk","portion":1.0,"unit":"glass","food":{"name":"Milk","calories":61.0,"protein":3.2,"carbs":4.8,"fat":3.3,"baseUnit":"cup","baseAmount":1},"portionMissing":false}],"debugLog":["Fragment: \"3 eggs\" -> food=\"eggs\" portion=3.0 unit=null","  ✅ Matched \"Egg\" on \"egg\"","Fragment: \"1 apple\" -> food=\"apple\" portion=1.0 unit=null","  ✅ Matched \"Apple\" on \"apple\"","Fragment: \"1 glass milk\" -> food=\"milk\" portion=1.0 unit=glass","  ✅ Matched \"Milk\" on \"milk\""],"count":3,"notFound":[]}
+
+Test 60: "breakfast: 1 bowl rice, 1 egg with bread"
+  Found: 3 foods
+  Response: {"foods":[{"name":"Rice Flour","portion":1.0,"unit":"bowl","food":{"name":"Rice Flour","calories":366.0,"protein":6.0,"carbs":80.0,"fat":1.0,"baseUnit":"g","baseAmount":100},"portionMissing":false},{"name":"Egg","portion":1.0,"unit":"piece","food":{"name":"Egg","calories":143.0,"protein":12.6,"carbs":1.1,"fat":9.5,"baseUnit":"piece","baseAmount":1},"portionMissing":false},{"name":"Rye Bread","portion":null,"unit":"g","food":{"name":"Rye Bread","calories":259.0,"protein":8.5,"carbs":49.0,"fat":3.3,"baseUnit":"g","baseAmount":100},"portionMissing":true}],"debugLog":["Fragment: \"breakfast: 1 bowl rice\" -> food=\"breakfast: rice\" portion=1.0 unit=bowl","  ✅ Matched \"Rice Flour\" on \"rice\"","Fragment: \"1 egg\" -> food=\"egg\" portion=1.0 unit=null","  ✅ Matched \"Egg\" on \"egg\"","Fragment: \"bread\" -> food=\"bread\" portion=null unit=null","  ✅ Matched \"Rye Bread\" on \"bread\""],"count":3,"notFound":[]}
+
+Test 61: "grilled chicken breast"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Chicken Breast","portion":null,"unit":"g","food":{"name":"Chicken Breast","calories":172.0,"protein":20.8,"carbs":0.0,"fat":9.3,"baseUnit":"g","baseAmount":100},"portionMissing":true}],"debugLog":["Fragment: \"grilled chicken breast\" -> food=\"grilled chicken breast\" portion=null unit=null","  ✅ Matched \"Chicken Breast\" on \"chicken breast\""],"count":1,"notFound":[]}
+
+Test 62: "boiled eggs"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Boiled Egg","portion":null,"unit":"piece","food":{"name":"Boiled Egg","calories":155.0,"protein":12.6,"carbs":1.1,"fat":11.0,"baseUnit":"piece","baseAmount":1},"portionMissing":true}],"debugLog":["Fragment: \"boiled eggs\" -> food=\"boiled eggs\" portion=null unit=null","  ✅ Matched \"Boiled Egg\" on \"boiled egg\""],"count":1,"notFound":[]}
+
+Test 63: "fried rice"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Rice Flour","portion":null,"unit":"g","food":{"name":"Rice Flour","calories":366.0,"protein":6.0,"carbs":80.0,"fat":1.0,"baseUnit":"g","baseAmount":100},"portionMissing":true}],"debugLog":["Fragment: \"fried rice\" -> food=\"fried rice\" portion=null unit=null","  ✅ Matched \"Rice Flour\" on \"rice\""],"count":1,"notFound":[]}
+
+Test 64: "steamed broccoli"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Broccoli","portion":null,"unit":"g","food":{"name":"Broccoli","calories":34.0,"protein":2.8,"carbs":7.0,"fat":0.4,"baseUnit":"g","baseAmount":100},"portionMissing":true}],"debugLog":["Fragment: \"steamed broccoli\" -> food=\"steamed broccoli\" portion=null unit=null","  ✅ Matched \"Broccoli\" on \"broccoli\""],"count":1,"notFound":[]}
+
+Test 65: "roasted almonds"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Almond","portion":null,"unit":"g","food":{"name":"Almond","calories":598.0,"protein":20.8,"carbs":22.0,"fat":54.1,"baseUnit":"g","baseAmount":100},"portionMissing":true}],"debugLog":["Fragment: \"roasted almonds\" -> food=\"roasted almonds\" portion=null unit=null","  ✅ Matched \"Almond\" on \"almond\""],"count":1,"notFound":[]}
+
+Test 66: "raw apple"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Apple","portion":null,"unit":"g","food":{"name":"Apple","calories":59.0,"protein":0.2,"carbs":15.0,"fat":0.3,"baseUnit":"g","baseAmount":100},"portionMissing":true}],"debugLog":["Fragment: \"raw apple\" -> food=\"raw apple\" portion=null unit=null","  ✅ Matched \"Apple\" on \"apple\""],"count":1,"notFound":[]}
+
+Test 67: "cooked dal"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Dalia (Broken Wheat)","portion":null,"unit":"g","food":{"name":"Dalia (Broken Wheat)","calories":342.0,"protein":11.2,"carbs":71.0,"fat":2.0,"baseUnit":"g","baseAmount":100},"portionMissing":true}],"debugLog":["Fragment: \"cooked dal\" -> food=\"cooked dal\" portion=null unit=null","  ✅ Matched \"Dalia (Broken Wheat)\" on \"dal\""],"count":1,"notFound":[]}
+
+Test 68: "fresh milk"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Milk","portion":null,"unit":"cup","food":{"name":"Milk","calories":61.0,"protein":3.2,"carbs":4.8,"fat":3.3,"baseUnit":"cup","baseAmount":1},"portionMissing":true}],"debugLog":["Fragment: \"fresh milk\" -> food=\"fresh milk\" portion=null unit=null","  ✅ Matched \"Milk\" on \"milk\""],"count":1,"notFound":[]}
+
+Test 69: "spicy chicken curry"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Chicken Curry","portion":null,"unit":"bowl","food":{"name":"Chicken Curry","calories":165.0,"protein":15.0,"carbs":8.0,"fat":8.0,"baseUnit":"bowl","baseAmount":1},"portionMissing":true}],"debugLog":["Fragment: \"spicy chicken curry\" -> food=\"spicy chicken curry\" portion=null unit=null","  ✅ Matched \"Chicken Curry\" on \"chicken curry\""],"count":1,"notFound":[]}
+
+Test 70: "sweet mango"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Mango (Raw)","portion":null,"unit":"g","food":{"name":"Mango (Raw)","calories":60.0,"protein":0.8,"carbs":15.0,"fat":0.4,"baseUnit":"g","baseAmount":100},"portionMissing":true}],"debugLog":["Fragment: \"sweet mango\" -> food=\"sweet mango\" portion=null unit=null","  ✅ Matched \"Mango (Raw)\" on \"mango\""],"count":1,"notFound":[]}
+
+Test 71: "sour yogurt"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Yogurt","portion":null,"unit":"cup","food":{"name":"Yogurt","calories":61.0,"protein":3.5,"carbs":3.3,"fat":3.0,"baseUnit":"cup","baseAmount":1},"portionMissing":true}],"debugLog":["Fragment: \"sour yogurt\" -> food=\"sour yogurt\" portion=null unit=null","  ✅ Matched \"Yogurt\" on \"yogurt\""],"count":1,"notFound":[]}
+
+Test 72: "salty chips"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Chips","portion":null,"unit":"g","food":{"name":"Chips","calories":550.0,"protein":6.5,"carbs":54.0,"fat":35.0,"baseUnit":"g","baseAmount":100},"portionMissing":true}],"debugLog":["Fragment: \"salty chips\" -> food=\"salty chips\" portion=null unit=null","  ✅ Matched \"Chips\" on \"chips\""],"count":1,"notFound":[]}
+
+Test 73: "bitter karela"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Karela","portion":null,"unit":"g","food":{"name":"Karela","calories":17.0,"protein":1.0,"carbs":3.0,"fat":0.2,"baseUnit":"g","baseAmount":100},"portionMissing":true}],"debugLog":["Fragment: \"bitter karela\" -> food=\"bitter karela\" portion=null unit=null","  ✅ Matched \"Karela\" on \"karela\""],"count":1,"notFound":[]}
+
+Test 74: "1 katori dal"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Dalia (Broken Wheat)","portion":1.0,"unit":"bowl","food":{"name":"Dalia (Broken Wheat)","calories":342.0,"protein":11.2,"carbs":71.0,"fat":2.0,"baseUnit":"g","baseAmount":100},"portionMissing":false}],"debugLog":["Fragment: \"1 katori dal\" -> food=\"dal\" portion=1.0 unit=bowl","  ✅ Matched \"Dalia (Broken Wheat)\" on \"dal\""],"count":1,"notFound":[]}
+
+Test 75: "2 pieces paratha"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Paratha","portion":2.0,"unit":"piece","food":{"name":"Paratha","calories":260.0,"protein":6.5,"carbs":32.0,"fat":12.0,"baseUnit":"piece","baseAmount":1},"portionMissing":false}],"debugLog":["Fragment: \"2 pieces paratha\" -> food=\"paratha\" portion=2.0 unit=null","  ✅ Matched \"Paratha\" on \"paratha\""],"count":1,"notFound":[]}
+
+Test 76: "half bowl sambar"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Sambar","portion":0.5,"unit":"bowl","food":{"name":"Sambar","calories":66.0,"protein":3.5,"carbs":10.0,"fat":1.5,"baseUnit":"bowl","baseAmount":1},"portionMissing":false}],"debugLog":["Fragment: \"half bowl sambar\" -> food=\"sambar\" portion=0.5 unit=bowl","  ✅ Matched \"Sambar\" on \"sambar\""],"count":1,"notFound":[]}
+
+Test 77: "1 dosa"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Dosa","portion":1.0,"unit":"piece","food":{"name":"Dosa","calories":168.0,"protein":4.5,"carbs":30.0,"fat":3.5,"baseUnit":"piece","baseAmount":1},"portionMissing":false}],"debugLog":["Fragment: \"1 dosa\" -> food=\"dosa\" portion=1.0 unit=null","  ✅ Matched \"Dosa\" on \"dosa\""],"count":1,"notFound":[]}
+
+Test 78: "idli"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Idli","portion":null,"unit":"piece","food":{"name":"Idli","calories":130.0,"protein":3.9,"carbs":24.0,"fat":0.6,"baseUnit":"piece","baseAmount":1},"portionMissing":true}],"debugLog":["Fragment: \"idli\" -> food=\"idli\" portion=null unit=null","  ✅ Matched \"Idli\" on \"idli\""],"count":1,"notFound":[]}
+
+Test 79: "1 cup chai"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Tea (Chai)","portion":1.0,"unit":"cup","food":{"name":"Tea (Chai)","calories":45.0,"protein":1.5,"carbs":6.0,"fat":1.5,"baseUnit":"cup","baseAmount":1},"portionMissing":false}],"debugLog":["Fragment: \"1 cup chai\" -> food=\"chai\" portion=1.0 unit=cup","  ✅ Matched \"Tea (Chai)\" on \"chai\""],"count":1,"notFound":[]}
+
+Test 80: "i had 2 rotis"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Roti","portion":2.0,"unit":"piece","food":{"name":"Roti","calories":106.0,"protein":3.0,"carbs":18.0,"fat":1.5,"baseUnit":"piece","baseAmount":1},"portionMissing":false}],"debugLog":["Fragment: \"2 rotis\" -> food=\"rotis\" portion=2.0 unit=null","  ✅ Matched \"Roti\" on \"roti\""],"count":1,"notFound":[]}
+
+Test 81: "i ate 3 eggs"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Egg","portion":3.0,"unit":"piece","food":{"name":"Egg","calories":143.0,"protein":12.6,"carbs":1.1,"fat":9.5,"baseUnit":"piece","baseAmount":1},"portionMissing":false}],"debugLog":["Fragment: \"3 eggs\" -> food=\"eggs\" portion=3.0 unit=null","  ✅ Matched \"Egg\" on \"egg\""],"count":1,"notFound":[]}
+
+Test 82: "i drank 1 glass milk"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Milk","portion":1.0,"unit":"glass","food":{"name":"Milk","calories":61.0,"protein":3.2,"carbs":4.8,"fat":3.3,"baseUnit":"cup","baseAmount":1},"portionMissing":false}],"debugLog":["Fragment: \"i drank 1 glass milk\" -> food=\"milk\" portion=1.0 unit=glass","  ✅ Matched \"Milk\" on \"milk\""],"count":1,"notFound":[]}
+
+Test 83: "had 1 apple"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Apple","portion":1.0,"unit":"g","food":{"name":"Apple","calories":59.0,"protein":0.2,"carbs":15.0,"fat":0.3,"baseUnit":"g","baseAmount":100},"portionMissing":false}],"debugLog":["Fragment: \"had 1 apple\" -> food=\"apple\" portion=1.0 unit=null","  ✅ Matched \"Apple\" on \"apple\""],"count":1,"notFound":[]}
+
+Test 84: "ate some rice"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Rice Flour","portion":null,"unit":"g","food":{"name":"Rice Flour","calories":366.0,"protein":6.0,"carbs":80.0,"fat":1.0,"baseUnit":"g","baseAmount":100},"portionMissing":true}],"debugLog":["Fragment: \"ate some rice\" -> food=\"rice\" portion=null unit=null","  ✅ Matched \"Rice Flour\" on \"rice\""],"count":1,"notFound":[]}
+
+Test 85: "took 2 cups coffee"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Coffee","portion":2.0,"unit":"cup","food":{"name":"Coffee","calories":287.0,"protein":12.0,"carbs":2.0,"fat":0.0,"baseUnit":"g","baseAmount":100},"portionMissing":false}],"debugLog":["Fragment: \"took 2 cups coffee\" -> food=\"coffee\" portion=2.0 unit=cup","  ✅ Matched \"Coffee\" on \"coffee\""],"count":1,"notFound":[]}
+
+Test 86: "breakfast: 2 rotis and 1 cup milk"
+  Found: 2 foods
+  Response: {"foods":[{"name":"Roti","portion":2.0,"unit":"piece","food":{"name":"Roti","calories":106.0,"protein":3.0,"carbs":18.0,"fat":1.5,"baseUnit":"piece","baseAmount":1},"portionMissing":false},{"name":"Milk","portion":1.0,"unit":"cup","food":{"name":"Milk","calories":61.0,"protein":3.2,"carbs":4.8,"fat":3.3,"baseUnit":"cup","baseAmount":1},"portionMissing":false}],"debugLog":["Fragment: \"breakfast: 2 rotis\" -> food=\"breakfast: rotis\" portion=2.0 unit=null","  ✅ Matched \"Roti\" on \"roti\"","Fragment: \"1 cup milk\" -> food=\"milk\" portion=1.0 unit=cup","  ✅ Matched \"Milk\" on \"milk\""],"count":2,"notFound":[]}
+
+Test 87: "lunch: 1 plate biryani"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Chicken Biryani","portion":1.0,"unit":"plate","food":{"name":"Chicken Biryani","calories":320.0,"protein":18.0,"carbs":35.0,"fat":12.0,"baseUnit":"bowl","baseAmount":1},"portionMissing":false}],"debugLog":["Fragment: \"lunch: 1 plate biryani\" -> food=\"lunch: biryani\" portion=1.0 unit=plate","  ✅ Matched \"Chicken Biryani\" on \"biryani\""],"count":1,"notFound":[]}
+
+Test 88: "dinner: 200g chicken with rice"
+  Found: 2 foods
+  Response: {"foods":[{"name":"Chicken Thigh","portion":200.0,"unit":"g","food":{"name":"Chicken Thigh","calories":144.0,"protein":18.0,"carbs":0.0,"fat":7.5,"baseUnit":"g","baseAmount":100},"portionMissing":false},{"name":"Rice Flour","portion":null,"unit":"g","food":{"name":"Rice Flour","calories":366.0,"protein":6.0,"carbs":80.0,"fat":1.0,"baseUnit":"g","baseAmount":100},"portionMissing":true}],"debugLog":["Fragment: \"dinner: 200g chicken\" -> food=\"dinner: chicken\" portion=200.0 unit=g","  ✅ Matched \"Chicken Thigh\" on \"chicken\"","Fragment: \"rice\" -> food=\"rice\" portion=null unit=null","  ✅ Matched \"Rice Flour\" on \"rice\""],"count":2,"notFound":[]}
+
+Test 89: "snack: handful almonds"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Almond","portion":null,"unit":"handful","food":{"name":"Almond","calories":598.0,"protein":20.8,"carbs":22.0,"fat":54.1,"baseUnit":"g","baseAmount":100},"portionMissing":true}],"debugLog":["Fragment: \"snack: handful almonds\" -> food=\"snack: almonds\" portion=null unit=handful","  ✅ Matched \"Almond\" on \"almond\""],"count":1,"notFound":[]}
+
+Test 90: "I had 2 rotis with 1 bowl dal, 200g chicken curry plus some curd and 1 apple"
+  Found: 5 foods
+  Response: {"foods":[{"name":"Roti","portion":2.0,"unit":"piece","food":{"name":"Roti","calories":106.0,"protein":3.0,"carbs":18.0,"fat":1.5,"baseUnit":"piece","baseAmount":1},"portionMissing":false},{"name":"Dalia (Broken Wheat)","portion":1.0,"unit":"bowl","food":{"name":"Dalia (Broken Wheat)","calories":342.0,"protein":11.2,"carbs":71.0,"fat":2.0,"baseUnit":"g","baseAmount":100},"portionMissing":false},{"name":"Chicken Curry","portion":200.0,"unit":"g","food":{"name":"Chicken Curry","calories":165.0,"protein":15.0,"carbs":8.0,"fat":8.0,"baseUnit":"bowl","baseAmount":1},"portionMissing":false},{"name":"Curd","portion":null,"unit":"bowl","food":{"name":"Curd","calories":60.0,"protein":3.1,"carbs":4.8,"fat":3.3,"baseUnit":"bowl","baseAmount":1},"portionMissing":true},{"name":"Apple","portion":1.0,"unit":"g","food":{"name":"Apple","calories":59.0,"protein":0.2,"carbs":15.0,"fat":0.3,"baseUnit":"g","baseAmount":100},"portionMissing":false}],"debugLog":["Fragment: \"2 rotis\" -> food=\"rotis\" portion=2.0 unit=null","  ✅ Matched \"Roti\" on \"roti\"","Fragment: \"1 bowl dal\" -> food=\"dal\" portion=1.0 unit=bowl","  ✅ Matched \"Dalia (Broken Wheat)\" on \"dal\"","Fragment: \"200g chicken curry\" -> food=\"chicken curry\" portion=200.0 unit=g","  ✅ Matched \"Chicken Curry\" on \"chicken curry\"","Fragment: \"some curd\" -> food=\"curd\" portion=null unit=null","  ✅ Matched \"Curd\" on \"curd\"","Fragment: \"1 apple\" -> food=\"apple\" portion=1.0 unit=null","  ✅ Matched \"Apple\" on \"apple\""],"count":5,"notFound":[]}
+
+Test 91: "For breakfast: 3 eggs, 2 slices bread with butter, coffee and orange juice"
+  Found: 5 foods
+  Response: {"foods":[{"name":"Egg","portion":3.0,"unit":"piece","food":{"name":"Egg","calories":143.0,"protein":12.6,"carbs":1.1,"fat":9.5,"baseUnit":"piece","baseAmount":1},"portionMissing":false},{"name":"Rye Bread","portion":2.0,"unit":"slice","food":{"name":"Rye Bread","calories":259.0,"protein":8.5,"carbs":49.0,"fat":3.3,"baseUnit":"g","baseAmount":100},"portionMissing":false},{"name":"Butter Chicken","portion":null,"unit":"bowl","food":{"name":"Butter Chicken","calories":195.0,"protein":15.0,"carbs":10.0,"fat":11.0,"baseUnit":"bowl","baseAmount":1},"portionMissing":true},{"name":"Coffee","portion":null,"unit":"g","food":{"name":"Coffee","calories":287.0,"protein":12.0,"carbs":2.0,"fat":0.0,"baseUnit":"g","baseAmount":100},"portionMissing":true},{"name":"Orange Juice","portion":null,"unit":"cup","food":{"name":"Orange Juice","calories":45.0,"protein":0.7,"carbs":11.0,"fat":0.3,"baseUnit":"cup","baseAmount":1},"portionMissing":true}],"debugLog":["Fragment: \"3 eggs\" -> food=\"eggs\" portion=3.0 unit=null","  ✅ Matched \"Egg\" on \"egg\"","Fragment: \"2 slices bread\" -> food=\"bread\" portion=2.0 unit=slice","  ✅ Matched \"Rye Bread\" on \"bread\"","Fragment: \"butter\" -> food=\"butter\" portion=null unit=null","  ✅ Matched \"Butter Chicken\" on \"butter\"","Fragment: \"coffee\" -> food=\"coffee\" portion=null unit=null","  ✅ Matched \"Coffee\" on \"coffee\"","Fragment: \"orange juice\" -> food=\"orange juice\" portion=null unit=null","  ✅ Matched \"Orange Juice\" on \"orange juice\""],"count":5,"notFound":[]}
+
+Test 92: "lunch: 1 cup rice + 250g paneer tikka + 1 bowl salad"
+  Found: 3 foods
+  Response: {"foods":[{"name":"Rice Flour","portion":1.0,"unit":"cup","food":{"name":"Rice Flour","calories":366.0,"protein":6.0,"carbs":80.0,"fat":1.0,"baseUnit":"g","baseAmount":100},"portionMissing":false},{"name":"Paneer Tikka Masala","portion":250.0,"unit":"g","food":{"name":"Paneer Tikka Masala","calories":320.0,"protein":18.0,"carbs":16.0,"fat":20.0,"baseUnit":"bowl","baseAmount":1},"portionMissing":false},{"name":"Salad","portion":1.0,"unit":"bowl","food":{"name":"Salad","calories":20.0,"protein":1.2,"carbs":4.0,"fat":0.3,"baseUnit":"bowl","baseAmount":1},"portionMissing":false}],"debugLog":["Fragment: \"lunch: 1 cup rice\" -> food=\"lunch: rice\" portion=1.0 unit=cup","  ✅ Matched \"Rice Flour\" on \"rice\"","Fragment: \"250g paneer tikka\" -> food=\"paneer tikka\" portion=250.0 unit=g","  ✅ Matched \"Paneer Tikka Masala\" on \"paneer tikka\"","Fragment: \"1 bowl salad\" -> food=\"salad\" portion=1.0 unit=bowl","  ✅ Matched \"Salad\" on \"salad\""],"count":3,"notFound":[]}
+
+Test 93: "dinner with family: 1.5 cups biryani, 200g chicken, curd, and 2 glasses lassi"
+  Found: 4 foods
+  Response: {"foods":[{"name":"Chicken Biryani","portion":1.5,"unit":"cup","food":{"name":"Chicken Biryani","calories":320.0,"protein":18.0,"carbs":35.0,"fat":12.0,"baseUnit":"bowl","baseAmount":1},"portionMissing":false},{"name":"Chicken Thigh","portion":200.0,"unit":"g","food":{"name":"Chicken Thigh","calories":144.0,"protein":18.0,"carbs":0.0,"fat":7.5,"baseUnit":"g","baseAmount":100},"portionMissing":false},{"name":"Curd","portion":null,"unit":"bowl","food":{"name":"Curd","calories":60.0,"protein":3.1,"carbs":4.8,"fat":3.3,"baseUnit":"bowl","baseAmount":1},"portionMissing":true},{"name":"Lassi","portion":2.0,"unit":"glass","food":{"name":"Lassi","calories":70.0,"protein":2.5,"carbs":8.0,"fat":3.5,"baseUnit":"glass","baseAmount":1},"portionMissing":false}],"debugLog":["Skipped (no food): \"dinner\"","Fragment: \"family: 1.5 cups biryani\" -> food=\"family: biryani\" portion=1.5 unit=cup","  ✅ Matched \"Chicken Biryani\" on \"biryani\"","Fragment: \"200g chicken\" -> food=\"chicken\" portion=200.0 unit=g","  ✅ Matched \"Chicken Thigh\" on \"chicken\"","Fragment: \"curd\" -> food=\"curd\" portion=null unit=null","  ✅ Matched \"Curd\" on \"curd\"","Fragment: \"2 glasses lassi\" -> food=\"lassi\" portion=2.0 unit=glass","  ✅ Matched \"Lassi\" on \"lassi\""],"count":4,"notFound":[]}
+
+Test 94: "snacking: handful almonds, 1 apple, 1 banana, 1 glass milk"
+  Found: 4 foods
+  Response: {"foods":[{"name":"Almond","portion":null,"unit":"handful","food":{"name":"Almond","calories":598.0,"protein":20.8,"carbs":22.0,"fat":54.1,"baseUnit":"g","baseAmount":100},"portionMissing":true},{"name":"Apple","portion":1.0,"unit":"g","food":{"name":"Apple","calories":59.0,"protein":0.2,"carbs":15.0,"fat":0.3,"baseUnit":"g","baseAmount":100},"portionMissing":false},{"name":"Banana","portion":1.0,"unit":"piece","food":{"name":"Banana","calories":89.0,"protein":1.1,"carbs":23.0,"fat":0.3,"baseUnit":"piece","baseAmount":1},"portionMissing":false},{"name":"Milk","portion":1.0,"unit":"glass","food":{"name":"Milk","calories":61.0,"protein":3.2,"carbs":4.8,"fat":3.3,"baseUnit":"cup","baseAmount":1},"portionMissing":false}],"debugLog":["Fragment: \"snacking: handful almonds\" -> food=\"snacking: almonds\" portion=null unit=handful","  ✅ Matched \"Almond\" on \"almond\"","Fragment: \"1 apple\" -> food=\"apple\" portion=1.0 unit=null","  ✅ Matched \"Apple\" on \"apple\"","Fragment: \"1 banana\" -> food=\"banana\" portion=1.0 unit=null","  ✅ Matched \"Banana\" on \"banana\"","Fragment: \"1 glass milk\" -> food=\"milk\" portion=1.0 unit=glass","  ✅ Matched \"Milk\" on \"milk\""],"count":4,"notFound":[]}
+
+Test 95: "about 200g chicken"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Chicken Thigh","portion":200.0,"unit":"g","food":{"name":"Chicken Thigh","calories":144.0,"protein":18.0,"carbs":0.0,"fat":7.5,"baseUnit":"g","baseAmount":100},"portionMissing":false}],"debugLog":["Fragment: \"about 200g chicken\" -> food=\"about chicken\" portion=200.0 unit=g","  ✅ Matched \"Chicken Thigh\" on \"chicken\""],"count":1,"notFound":[]}
+
+Test 96: "roughly 2 cups rice"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Rice Flour","portion":2.0,"unit":"cup","food":{"name":"Rice Flour","calories":366.0,"protein":6.0,"carbs":80.0,"fat":1.0,"baseUnit":"g","baseAmount":100},"portionMissing":false}],"debugLog":["Fragment: \"roughly 2 cups rice\" -> food=\"roughly rice\" portion=2.0 unit=cup","  ✅ Matched \"Rice Flour\" on \"rice\""],"count":1,"notFound":[]}
+
+Test 97: "around 1 bowl dal"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Dalia (Broken Wheat)","portion":1.0,"unit":"bowl","food":{"name":"Dalia (Broken Wheat)","calories":342.0,"protein":11.2,"carbs":71.0,"fat":2.0,"baseUnit":"g","baseAmount":100},"portionMissing":false}],"debugLog":["Fragment: \"around 1 bowl dal\" -> food=\"around dal\" portion=1.0 unit=bowl","  ✅ Matched \"Dalia (Broken Wheat)\" on \"dal\""],"count":1,"notFound":[]}
+
+Test 98: "few eggs"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Egg","portion":3.0,"unit":"piece","food":{"name":"Egg","calories":143.0,"protein":12.6,"carbs":1.1,"fat":9.5,"baseUnit":"piece","baseAmount":1},"portionMissing":false}],"debugLog":["Fragment: \"few eggs\" -> food=\"eggs\" portion=3.0 unit=null","  ✅ Matched \"Egg\" on \"egg\""],"count":1,"notFound":[]}
+
+Test 99: "couple rotis"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Roti","portion":2.0,"unit":"piece","food":{"name":"Roti","calories":106.0,"protein":3.0,"carbs":18.0,"fat":1.5,"baseUnit":"piece","baseAmount":1},"portionMissing":false}],"debugLog":["Fragment: \"couple rotis\" -> food=\"rotis\" portion=2.0 unit=null","  ✅ Matched \"Roti\" on \"roti\""],"count":1,"notFound":[]}
+
+Test 100: "some milk"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Milk","portion":null,"unit":"cup","food":{"name":"Milk","calories":61.0,"protein":3.2,"carbs":4.8,"fat":3.3,"baseUnit":"cup","baseAmount":1},"portionMissing":true}],"debugLog":["Fragment: \"some milk\" -> food=\"milk\" portion=null unit=null","  ✅ Matched \"Milk\" on \"milk\""],"count":1,"notFound":[]}
+
+Test 101: "lot of salad"
+  Found: 1 foods
+  Response: {"foods":[{"name":"Salad","portion":null,"unit":"bowl","food":{"name":"Salad","calories":20.0,"protein":1.2,"carbs":4.0,"fat":0.3,"baseUnit":"bowl","baseAmount":1},"portionMissing":true}],"debugLog":["Fragment: \"lot of salad\" -> food=\"salad\" portion=null unit=null","  ✅ Matched \"Salad\" on \"salad\""],"count":1,"notFound":[]}
+
