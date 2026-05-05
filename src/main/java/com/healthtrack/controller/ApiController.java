@@ -236,6 +236,35 @@ public class ApiController {
         }
     }
 
+    @PostMapping("/ai/workout-plan")
+    public ResponseEntity<?> getWorkoutPlan(@RequestBody Map<String, Object> request) {
+        try {
+            if (!openAIService.isConfigured()) {
+                return ResponseEntity.badRequest().body(new HashMap<String, String>() {{
+                    put("error", "AI not configured. Please add your OpenAI API key in Settings.");
+                }});
+            }
+            @SuppressWarnings("unchecked")
+            Map<String, String> answers = (Map<String, String>) request.get("answers");
+            @SuppressWarnings("unchecked")
+            Map<String, Object> profile = (Map<String, Object>) request.get("profile");
+            @SuppressWarnings("unchecked")
+            Map<String, Object> calorieTarget = (Map<String, Object>) request.get("calorieTarget");
+
+            Map<String, Object> plan = openAIService.getWorkoutPlan(answers, profile, calorieTarget);
+            if (plan == null) {
+                return ResponseEntity.badRequest().body(new HashMap<String, String>() {{
+                    put("error", "Failed to generate workout plan. Please try again.");
+                }});
+            }
+            return ResponseEntity.ok(plan);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new HashMap<String, String>() {{
+                put("error", "Error: " + e.getMessage());
+            }});
+        }
+    }
+
     @PostMapping("/ai/ingredient-suggestions")
     public ResponseEntity<?> getIngredientBasedSuggestions(@RequestBody Map<String, String> request) {
         try {

@@ -15,11 +15,16 @@ public class OpenAIService {
     @Value("${openai.api.key:}")
     private String apiKey;
 
-    private final OkHttpClient httpClient = new OkHttpClient();
-    private static final String OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
+    private final OkHttpClient httpClient = new OkHttpClient.Builder()
+            .connectTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
+            .readTimeout(60, java.util.concurrent.TimeUnit.SECONDS)
+            .build();
+    private static final String OPENAI_API_URL = "https://api.groq.com/openai/v1/chat/completions";
+    private static final String MODEL = "llama-3.3-70b-versatile";
 
     public void setApiKey(String key) {
-        this.apiKey = key;
+        // strip any non-ASCII characters that would break the HTTP Authorization header
+        this.apiKey = key == null ? "" : key.replaceAll("[^\\x20-\\x7E]", "").trim();
     }
 
     public boolean isConfigured() {
@@ -89,6 +94,10 @@ public class OpenAIService {
     }
 
     private String callOpenAI(String prompt) throws IOException {
+        return callOpenAI(prompt, 1000);
+    }
+
+    private String callOpenAI(String prompt, int maxTokens) throws IOException {
         JsonObject message = new JsonObject();
         message.addProperty("role", "user");
         message.addProperty("content", prompt);
@@ -97,10 +106,10 @@ public class OpenAIService {
         messages.add(message);
 
         JsonObject requestBody = new JsonObject();
-        requestBody.addProperty("model", "gpt-3.5-turbo");
+        requestBody.addProperty("model", MODEL);
         requestBody.add("messages", messages);
         requestBody.addProperty("temperature", 0.7);
-        requestBody.addProperty("max_tokens", 1000);
+        requestBody.addProperty("max_tokens", maxTokens);
 
         RequestBody body = RequestBody.create(
                 requestBody.toString(),
@@ -150,6 +159,79 @@ public class OpenAIService {
         try {
             return new com.google.gson.Gson().fromJson(response, Map.class);
         } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public Map<String, Object> getWorkoutPlan(Map<String, String> answers, Map<String, Object> profile, Map<String, Object> calorieTarget) {
+        if (!isConfigured()) {
+            return null;
+        }
+        try {
+            String prompt = buildWorkoutPrompt(answers, profile, calorieTarget);
+            String response = callOpenAI(prompt, 4000);
+            return parseWorkoutPlan(response);
+        } catch (IOException e) {
+            System.err.println("Error getting workout plan: " + e.getMessage());
+            return null;
+        }
+    }
+
+    private String buildWorkoutPrompt(Map<String, String> answers, Map<String, Object> profile, Map<String, Object> calorieTarget) {
+        String goal = calorieTarget != null && calorieTarget.get("goal") != null ? calorieTarget.get("goal").toString() : "maintain";
+        String targetCal = calorieTarget != null && calorieTarget.get("targetCalories") != null ? calorieTarget.get("targetCalories").toString() : "2000";
+        String age = profile != null && profile.get("age") != null ? profile.get("age").toString() : "unknown";
+        String weight = profile != null && profile.get("weight") != null ? profile.get("weight").toString() : "unknown";
+        String height = profile != null && profile.get("height") != null ? profile.get("height").toString() : "unknown";
+        String gender = profile != null && profile.get("gender") != null ? profile.get("gender").toString() : "unknown";
+
+        return "You are an expert personal trainer and fitness coach. Create a detailed personalized workout plan.\n\n" +
+               "USER PROFILE:\n" +
+               "- Age: " + age + ", Weight: " + weight + "kg, Height: " + height + "cm, Gender: " + gender + "\n" +
+               "- Goal: " + goal + " (Calorie target: " + targetCal + " kcal/day)\n\n" +
+               "ANSWERS FROM USER:\n" +
+               "- Days per week: " + answers.getOrDefault("daysPerWeek", "4") + "\n" +
+               "- Gym access: " + answers.getOrDefault("gymAccess", "gym") + "\n" +
+               "- Experience level: " + answers.getOrDefault("experience", "intermediate") + "\n" +
+               "- Injuries/limitations: " + answers.getOrDefault("injuries", "none") + "\n" +
+               "- Session duration: " + answers.getOrDefault("sessionDuration", "45-60 minutes") + "\n" +
+               "- Equipment: " + answers.getOrDefault("equipment", "full gym") + "\n" +
+               "- Focus area: " + answers.getOrDefault("specificFocus", "overall balanced") + "\n" +
+               "- Additional notes: " + answers.getOrDefault("additionalNotes", "none") + "\n\n" +
+               "Return ONLY valid JSON (no markdown, no extra text) with this exact structure:\n" +
+               "{\n" +
+               "  \"goalTitle\": \"short motivational goal title\",\n" +
+               "  \"summary\": \"2-3 sentence plan overview\",\n" +
+               "  \"frequency\": \"e.g. 4 days/week\",\n" +
+               "  \"sessionDuration\": \"e.g. 45-60 minutes\",\n" +
+               "  \"trainingFocus\": \"e.g. Strength + Cardio\",\n" +
+               "  \"weeklySchedule\": {\n" +
+               "    \"Monday\": [\"Exercise 1 - sets x reps\", \"Exercise 2 - sets x reps\"],\n" +
+               "    \"Tuesday\": [\"...\"],\n" +
+               "    \"Wednesday\": [\"...\"],\n" +
+               "    \"Thursday\": [\"...\"],\n" +
+               "    \"Friday\": [\"...\"],\n" +
+               "    \"Saturday\": [\"...\"],\n" +
+               "    \"Sunday\": [\"...\"]\n" +
+               "  },\n" +
+               "  \"exercises\": [\n" +
+               "    {\"name\": \"Exercise Name\", \"category\": \"strength|cardio|flexibility\", \"sets\": \"3 sets\", \"reps\": \"10-12 reps\", \"notes\": \"tip\"}\n" +
+               "  ],\n" +
+               "  \"nutritionTip\": \"one specific nutrition advice relevant to their goal\",\n" +
+               "  \"coachMessage\": \"short motivating message to the user\"\n" +
+               "}";
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> parseWorkoutPlan(String response) {
+        try {
+            String clean = response.trim();
+            if (clean.startsWith("```")) {
+                clean = clean.replaceAll("^```[a-z]*\\n?", "").replaceAll("```$", "").trim();
+            }
+            return new com.google.gson.Gson().fromJson(clean, Map.class);
+        } catch (Exception e) {
+            System.err.println("Failed to parse workout plan JSON: " + e.getMessage());
             return null;
         }
     }

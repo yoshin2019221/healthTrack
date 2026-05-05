@@ -1218,19 +1218,39 @@
             setTimeout(() => this.showCoachQuestion(), 800);
         },
 
-        finalizeCoachPlan() {
+        async finalizeCoachPlan() {
             const answers = this.coachState.answers;
-            const profile = JSON.parse(localStorage.getItem('userProfile'));
-            const target = JSON.parse(localStorage.getItem('calorieTarget'));
-            const plan = this.generatePersonalizedPlan(answers, profile, target);
-            this.addCoachMessage('Perfect! I\'ve created your personalized workout plan. Check the <strong>Your Plan</strong> and <strong>Schedule</strong> tabs!', 'coach');
-            localStorage.setItem('personalizedWorkoutPlan', JSON.stringify(plan));
-            localStorage.setItem('coachAnswers', JSON.stringify(answers));
-            setTimeout(() => { this.loadTrainerPlan(plan); this.loadWeeklySchedule(plan.goal, plan); }, 1000);
-        },
+            const profile = JSON.parse(localStorage.getItem('userProfile') || 'null');
+            const calorieTarget = JSON.parse(localStorage.getItem('calorieTarget') || 'null');
 
-        generatePersonalizedPlan(answers, profile, target) {
-            return { goal: target ? target.goal : 'maintain', daysPerWeek: parseInt(answers.daysPerWeek) || 4, gymAccess: answers.gymAccess, experience: answers.experience, injuries: answers.injuries, sessionDuration: answers.sessionDuration, equipment: answers.equipment, specificFocus: answers.specificFocus, additionalNotes: answers.additionalNotes, profile, target };
+            this.addCoachMessage('Generating your personalized AI workout plan... ⏳', 'coach');
+            document.getElementById('coachQuestions').innerHTML = '';
+
+            try {
+                const res = await fetch('/api/ai/workout-plan', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ answers, profile, calorieTarget })
+                });
+                const data = await res.json();
+
+                if (data.error) {
+                    this.addCoachMessage('⚠️ ' + data.error, 'coach');
+                    return;
+                }
+
+                localStorage.setItem('aiWorkoutPlan', JSON.stringify(data));
+                localStorage.setItem('coachAnswers', JSON.stringify(answers));
+
+                this.addCoachMessage(
+                    (data.coachMessage || 'Your personalized plan is ready!') +
+                    ' Check the <strong>Your Plan</strong>, <strong>Exercises</strong> and <strong>Schedule</strong> tabs!',
+                    'coach'
+                );
+                setTimeout(() => { this.loadTrainerPlan(data); }, 800);
+            } catch(e) {
+                this.addCoachMessage('Failed to connect to AI. Please check your API key in Settings.', 'coach');
+            }
         },
 
         async loadCalorieTarget() {
@@ -1279,7 +1299,7 @@
         },
 
         async setApiKey() {
-            const key = document.getElementById('apiKeyInput').value.trim();
+            const key = document.getElementById('apiKeyInput').value.replace(/[^\x20-\x7E]/g, '').trim();
             if (!key) { this.showMessage('API key cannot be empty', 'error'); return; }
             try {
                 const res = await fetch('/api/ai/api-key', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ apiKey: key }) });
@@ -1289,7 +1309,7 @@
         },
 
         async setApiKeyModal() {
-            const key = document.getElementById('apiKeyInputModal').value.trim();
+            const key = document.getElementById('apiKeyInputModal').value.replace(/[^\x20-\x7E]/g, '').trim();
             if (!key) return;
             document.getElementById('apiKeyInput').value = key;
             await this.setApiKey();
@@ -1604,44 +1624,40 @@
             } catch(e) { this.showMessage('Failed to generate suggestions', 'error'); }
         },
 
-        loadTrainerPlan(customPlan = null) {
+        loadTrainerPlan(aiPlan = null) {
             try {
-                let target, profile;
-                if (customPlan) { target = customPlan.target; profile = customPlan.profile; }
-                else {
-                    const ct = localStorage.getItem('calorieTarget');
-                    const up = localStorage.getItem('userProfile');
-                    if (!ct || !up) return;
-                    target = JSON.parse(ct); profile = JSON.parse(up);
+                const plan = aiPlan || JSON.parse(localStorage.getItem('aiWorkoutPlan') || 'null');
+                const profile = JSON.parse(localStorage.getItem('userProfile') || 'null');
+                const target = JSON.parse(localStorage.getItem('calorieTarget') || 'null');
+
+                if (plan && plan.goalTitle) {
+                    // AI-generated plan
+                    const profileLine = profile ? `Age: ${profile.age} | Weight: ${profile.weight}kg | Height: ${profile.height}cm${target ? ' | Target: ' + Math.round(target.targetCalories) + ' cal' : ''}` : '';
+                    document.getElementById('goalDescription').innerHTML =
+                        `<strong>${plan.goalTitle}</strong><p style="margin-top:8px;font-size:0.85em;color:var(--text2)">${profileLine}</p>` +
+                        (plan.summary ? `<p style="margin-top:10px;font-size:0.88em;line-height:1.6">${plan.summary}</p>` : '');
+                    document.getElementById('trainingFocus').textContent = plan.trainingFocus || '—';
+                    document.getElementById('trainingFrequency').textContent = plan.frequency || '—';
+                    document.getElementById('sessionDuration').textContent = plan.sessionDuration || '—';
+                    const schedHtml = plan.weeklySchedule
+                        ? Object.entries(plan.weeklySchedule).map(([d,acts]) =>
+                            `<strong>${d}:</strong> ${Array.isArray(acts) ? acts.join(', ') : acts}`).join('<br><br>')
+                        : '';
+                    document.getElementById('trainingPlanDetails').innerHTML =
+                        schedHtml + (plan.nutritionTip ? `<br><br>🥗 <strong>Nutrition:</strong> ${plan.nutritionTip}` : '');
+                    if (plan.exercises) { this.currentExercises = plan.exercises; this.renderExercises('all'); }
+                    if (plan.weeklySchedule) this.renderWeeklySchedule(plan.weeklySchedule);
+                } else if (target) {
+                    // Fallback: basic static plan until AI is used
+                    const goalText = { lose: '💪 Weight Loss', gain: '🏋️ Muscle Gain', maintain: '⚖️ Maintenance' }[target.goal] || '⚖️ Fitness';
+                    document.getElementById('goalDescription').innerHTML =
+                        `<strong>${goalText}</strong><p style="margin-top:8px;font-size:0.85em;color:var(--text2)">Use the AI Coach tab to generate a personalized plan.</p>`;
+                    document.getElementById('trainingFocus').textContent = 'Run AI Coach to personalise';
+                    document.getElementById('trainingFrequency').textContent = '—';
+                    document.getElementById('sessionDuration').textContent = '—';
+                    document.getElementById('trainingPlanDetails').innerHTML = 'Complete the AI Coach conversation to get your custom plan.';
                 }
-                let goalText, trainingFocus, frequency, duration, plan;
-                if (target.goal === 'lose') {
-                    goalText = '💪 Weight Loss & Fat Burning';
-                    trainingFocus = `High-intensity cardio (3x/week) + Strength training (2x/week). Target: ${target.targetCalories} cal/day`;
-                    frequency = '5 days/week (3 cardio + 2 strength)';
-                    duration = '45-60 minutes per session';
-                    plan = `<strong>Monday:</strong> Cardio 30min + Core 15min<br><br><strong>Tuesday:</strong> Full-body strength (Squats, Deadlifts, Push-ups)<br><br><strong>Wednesday:</strong> HIIT Cardio + Yoga/Stretching<br><br><strong>Thursday:</strong> Upper body strength + Lower body finisher<br><br><strong>Friday:</strong> Cardio (Swimming/Running) + Core<br><br><strong>Weekend:</strong> Active recovery / light walking<br><br><strong>Protein:</strong> 1.6-2.2g per kg body weight`;
-                } else if (target.goal === 'gain') {
-                    goalText = '🏋️ Muscle Gain & Strength';
-                    trainingFocus = `Strength-focused training with progressive overload. Surplus: ${target.targetCalories} cal/day`;
-                    frequency = '4-5 days/week (strength focused)';
-                    duration = '60-75 minutes per session';
-                    plan = `<strong>Monday:</strong> Chest & Triceps (Bench Press, Dips)<br><br><strong>Tuesday:</strong> Back & Biceps (Deadlifts, Pull-ups, Rows)<br><br><strong>Wednesday:</strong> Legs (Squats, Leg Press, Lunges)<br><br><strong>Thursday:</strong> Shoulders & Arms (Military Press, Laterals)<br><br><strong>Friday:</strong> Full body / weak points<br><br><strong>Weekend:</strong> Rest<br><br><strong>Protein:</strong> 2.2g per kg body weight`;
-                } else {
-                    goalText = '⚖️ Maintenance & General Fitness';
-                    trainingFocus = `Balanced training — 3x strength + 2x cardio. Goal: ${target.targetCalories} cal/day`;
-                    frequency = '4-5 days/week (balanced)';
-                    duration = '45-50 minutes per session';
-                    plan = `<strong>Monday:</strong> Full-body strength (Squats, Push-ups, Rows)<br><br><strong>Tuesday:</strong> Cardio 30min<br><br><strong>Wednesday:</strong> Upper body + Core<br><br><strong>Thursday:</strong> Cardio + Flexibility<br><br><strong>Friday:</strong> Lower body strength<br><br><strong>Weekend:</strong> Rest or recreation<br><br><strong>Protein:</strong> 1.6g per kg body weight`;
-                }
-                document.getElementById('goalDescription').innerHTML = `<strong>${goalText}</strong><p style="margin-top:8px;font-size:0.85em;">Age: ${profile.age} | Weight: ${profile.weight}kg | Height: ${profile.height}cm | Target: ${Math.round(target.targetCalories)} cal</p>`;
-                document.getElementById('trainingFocus').textContent = trainingFocus;
-                document.getElementById('trainingFrequency').textContent = frequency;
-                document.getElementById('sessionDuration').textContent = duration;
-                document.getElementById('trainingPlanDetails').innerHTML = plan;
-                this.loadExercises(target.goal);
-                this.loadWeeklySchedule(target.goal);
-            } catch(e) {}
+            } catch(e) { console.error(e); }
         },
 
         switchTrainerTab(tabName) {
@@ -1653,43 +1669,6 @@
             event.target.classList.add('active');
         },
 
-        loadExercises(goal) {
-            const exercises = {
-                lose: [
-                    { name: '🏃 Running/Jogging', category: 'cardio', sets: '20-30 min', reps: 'Steady pace', cals: '300-400 cal' },
-                    { name: '🚴 Cycling', category: 'cardio', sets: '20-30 min', reps: 'Moderate', cals: '250-350 cal' },
-                    { name: '🏊 Swimming', category: 'cardio', sets: '20-30 min', reps: 'Continuous', cals: '400-500 cal' },
-                    { name: '💪 Push-ups', category: 'strength', sets: '3 sets', reps: '12-15 reps', notes: 'Core tight' },
-                    { name: '🦵 Squats', category: 'strength', sets: '3 sets', reps: '15-20 reps', notes: 'Full depth' },
-                    { name: '💪 Dumbbell Rows', category: 'strength', sets: '3 sets', reps: '12-15 reps', notes: 'Back focus' },
-                    { name: '⛹️ Burpees', category: 'cardio', sets: '3 sets', reps: '10-15 reps', notes: 'Full body HIIT' },
-                    { name: '🤸 Mountain Climbers', category: 'cardio', sets: '3 sets', reps: '20-30 reps', notes: 'Core + cardio' },
-                    { name: '🧘 Yoga Flow', category: 'flexibility', sets: '30 min', reps: 'Continuous', notes: 'Stretching' }
-                ],
-                gain: [
-                    { name: '🏋️ Barbell Squats', category: 'strength', sets: '4 sets', reps: '6-8 reps', weight: 'Heavy' },
-                    { name: '🏋️ Deadlifts', category: 'strength', sets: '4 sets', reps: '5-8 reps', weight: 'Heavy' },
-                    { name: '🏋️ Bench Press', category: 'strength', sets: '4 sets', reps: '6-10 reps', weight: 'Heavy' },
-                    { name: '💪 Pull-ups', category: 'strength', sets: '4 sets', reps: '6-12 reps', notes: 'Weighted' },
-                    { name: '💪 Dumbbell Curls', category: 'strength', sets: '3 sets', reps: '8-12 reps', weight: 'Heavy' },
-                    { name: '🏋️ Leg Press', category: 'strength', sets: '4 sets', reps: '8-12 reps', weight: 'Heavy' },
-                    { name: '🚴 Light Cardio', category: 'cardio', sets: '2x/week', reps: '20 min', notes: 'Recovery' },
-                    { name: '🧘 Stretching', category: 'flexibility', sets: '10 min', notes: 'Post-workout' }
-                ],
-                maintain: [
-                    { name: '💪 Push-ups', category: 'strength', sets: '3 sets', reps: '12-15 reps', notes: 'Bodyweight' },
-                    { name: '🦵 Squats', category: 'strength', sets: '3 sets', reps: '15-20 reps', notes: 'Bodyweight' },
-                    { name: '🏃 Jogging', category: 'cardio', sets: '20-30 min', reps: 'Moderate', cals: '250-350 cal' },
-                    { name: '🏊 Swimming', category: 'cardio', sets: '20 min', reps: 'Steady', cals: '300-400 cal' },
-                    { name: '🧘 Yoga', category: 'flexibility', sets: '30 min', reps: 'Flow', notes: 'Balance' },
-                    { name: '🤸 Planks', category: 'strength', sets: '3 sets', reps: '30-60 sec', notes: 'Core' },
-                    { name: '🧘 Stretching', category: 'flexibility', sets: '10 min', notes: 'Recovery' }
-                ]
-            };
-            this.currentExercises = exercises[goal] || exercises.maintain;
-            this.renderExercises('all');
-        },
-
         filterExercises(cat) {
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
             event.target.classList.add('active');
@@ -1697,12 +1676,16 @@
         },
 
         renderExercises(cat) {
-            const list = cat === 'all' ? this.currentExercises : this.currentExercises.filter(e => e.category === cat);
+            const list = (cat === 'all' ? this.currentExercises : (this.currentExercises || []).filter(e => e.category === cat)) || [];
+            if (!list.length) {
+                document.getElementById('exercisesGrid').innerHTML = '<p style="color:var(--text2);padding:20px">Complete the AI Coach conversation to generate your exercise list.</p>';
+                return;
+            }
             document.getElementById('exercisesGrid').innerHTML = list.map(ex => `
                 <div class="exercise-card">
                     <div class="exercise-name">${ex.name}</div>
                     <div class="exercise-details">
-                        <div class="exercise-detail-item"><strong>Sets:</strong> ${ex.sets}</div>
+                        ${ex.sets ? `<div class="exercise-detail-item"><strong>Sets:</strong> ${ex.sets}</div>` : ''}
                         ${ex.reps ? `<div class="exercise-detail-item"><strong>Reps:</strong> ${ex.reps}</div>` : ''}
                         ${ex.weight ? `<div class="exercise-detail-item"><strong>Weight:</strong> ${ex.weight}</div>` : ''}
                         ${ex.cals ? `<div class="exercise-detail-item"><strong>Calories:</strong> ${ex.cals}</div>` : ''}
@@ -1711,17 +1694,12 @@
                 </div>`).join('');
         },
 
-        loadWeeklySchedule(goal) {
-            const schedules = {
-                lose: { Monday:['🏃 Cardio 30min','💪 Core 15min'], Tuesday:['🏋️ Full-body Strength','💪 Squats, Deadlifts, Push-ups'], Wednesday:['🏃 HIIT Cardio','🧘 Yoga 15min'], Thursday:['💪 Upper Body','🏋️ Lower body finisher'], Friday:['🏊 Swimming/Running','💪 Core'], Saturday:['Rest or walking'], Sunday:['Rest'] },
-                gain: { Monday:['🏋️ Chest & Triceps','💪 Bench, Dips (60min)'], Tuesday:['🏋️ Back & Biceps','💪 Deadlifts, Rows (60min)'], Wednesday:['Rest or Light Cardio'], Thursday:['🏋️ Legs','💪 Squats, Leg Press (75min)'], Friday:['🏋️ Shoulders & Arms','💪 Military Press (60min)'], Saturday:['🏋️ Full body'], Sunday:['Rest'] },
-                maintain: { Monday:['💪 Full-body strength','🏋️ 45min'], Tuesday:['🏃 Cardio 30min'], Wednesday:['💪 Upper body + Core'], Thursday:['🏊 Cardio + Flexibility'], Friday:['💪 Lower body'], Saturday:['🏃 Recreation'], Sunday:['Rest'] }
-            };
-            const schedule = schedules[goal] || schedules.maintain;
+        renderWeeklySchedule(schedule) {
+            if (!schedule) return;
             document.getElementById('weeklySchedule').innerHTML = Object.entries(schedule).map(([day, acts]) => `
                 <div class="day-card">
                     <h4>${day}</h4>
-                    ${acts.map(a => `<div class="workout-item">${a}</div>`).join('')}
+                    ${(Array.isArray(acts) ? acts : [acts]).map(a => `<div class="workout-item">${a}</div>`).join('')}
                 </div>`).join('');
         }
     };
