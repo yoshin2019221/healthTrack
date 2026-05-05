@@ -35,7 +35,6 @@ public class OpenAIService {
         if (!isConfigured()) {
             return getDefaultSuggestions();
         }
-
         try {
             String prompt = buildSuggestionPrompt(userInput, preferences, ingredients);
             String response = callOpenAI(prompt);
@@ -44,6 +43,73 @@ public class OpenAIService {
             System.err.println("Error calling OpenAI: " + e.getMessage());
             return getDefaultSuggestions();
         }
+    }
+
+    public Map<String, Object> getCombinedSuggestions(String preferences, String dietStatus, String ingredients) {
+        Map<String, Object> result = new HashMap<>();
+        if (!isConfigured()) {
+            result.put("ingredientBased", ingredients != null && !ingredients.isEmpty()
+                    ? getDefaultSuggestions(ingredients, preferences)
+                    : new ArrayList<>());
+            result.put("general", getDefaultSuggestions(null, preferences));
+            return result;
+        }
+        try {
+            String ingredientPrompt = buildCombinedPrompt(preferences, dietStatus, ingredients);
+            String response = callOpenAI(ingredientPrompt, 2000);
+            return parseCombinedSuggestions(response, preferences, dietStatus, ingredients);
+        } catch (IOException e) {
+            System.err.println("Error getting combined suggestions: " + e.getMessage());
+            result.put("ingredientBased", getDefaultSuggestions(ingredients, preferences));
+            result.put("general", getDefaultSuggestions(null, preferences));
+            return result;
+        }
+    }
+
+    private String buildCombinedPrompt(String preferences, String dietStatus, String ingredients) {
+        String prefText = "all foods (omnivore)";
+        if ("vegetarian".equals(preferences)) prefText = "vegetarian (no meat, eggs/dairy ok)";
+        else if ("vegan".equals(preferences)) prefText = "vegan (no animal products)";
+        else if ("highprotein".equals(preferences)) prefText = "high protein (25g+ per meal)";
+        else if ("lowcarb".equals(preferences)) prefText = "low carb (under 20g carbs per meal)";
+
+        boolean hasIngredients = ingredients != null && !ingredients.trim().isEmpty();
+
+        return "You are a professional Indian nutritionist. Suggest healthy Indian meals.\n\n" +
+               "Dietary preference: " + prefText + "\n" +
+               "Diet status: " + (dietStatus != null ? dietStatus : "ontrack") + "\n" +
+               (hasIngredients ? "Home ingredients available: " + ingredients + "\n" : "") +
+               "\nReturn ONLY valid JSON (no markdown) with this structure:\n" +
+               "{\n" +
+               (hasIngredients ?
+               "  \"ingredientBased\": [\n" +
+               "    {\"name\": \"Indian meal name\", \"calories\": 400, \"description\": \"brief why it fits + which ingredients used\"}\n" +
+               "  ],\n" : "") +
+               "  \"general\": [\n" +
+               "    {\"name\": \"Indian meal name\", \"calories\": 400, \"description\": \"brief why it fits their diet goal\"}\n" +
+               "  ]\n" +
+               "}\n" +
+               (hasIngredients ? "Provide 4 ingredient-based Indian meals and 5 general Indian meal suggestions.\n" : "Provide 6 general Indian meal suggestions.\n") +
+               "All meals must be Indian cuisine. Follow dietary restrictions strictly.";
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> parseCombinedSuggestions(String response, String preferences, String dietStatus, String ingredients) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            String clean = response.trim();
+            if (clean.startsWith("```")) {
+                clean = clean.replaceAll("^```[a-z]*\\n?", "").replaceAll("```$", "").trim();
+            }
+            Map<String, Object> parsed = new com.google.gson.Gson().fromJson(clean, Map.class);
+            result.put("ingredientBased", parsed.getOrDefault("ingredientBased", new ArrayList<>()));
+            result.put("general", parsed.getOrDefault("general", new ArrayList<>()));
+        } catch (Exception e) {
+            System.err.println("Failed to parse combined suggestions: " + e.getMessage());
+            result.put("ingredientBased", getDefaultSuggestions(ingredients, preferences));
+            result.put("general", getDefaultSuggestions(null, preferences));
+        }
+        return result;
     }
 
     public List<Map<String, Object>> parseMultipleFoods(String foodText) {
@@ -86,11 +152,7 @@ public class OpenAIService {
     }
 
     private String buildSuggestionPrompt(String userInput, String preferences, String ingredients) {
-        return "Based on user input '" + userInput + "', dietary preference '" + preferences +
-               "' and available ingredients '" + ingredients +
-               "', suggest 5 healthy meal combinations. For each suggestion, provide: " +
-               "meal name, estimated calories, brief description. Return as JSON array with objects containing: " +
-               "name, calories, description";
+        return buildIngredientsPrompt(ingredients, preferences, userInput);
     }
 
     private String callOpenAI(String prompt) throws IOException {

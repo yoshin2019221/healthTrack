@@ -190,6 +190,20 @@ public class ApiController {
         }
     }
 
+    @GetMapping("/ai/combined-suggestions")
+    public ResponseEntity<?> getCombinedSuggestions() {
+        try {
+            UserPreference pref = mealService.getOrCreatePreference();
+            Map<String, Object> result = openAIService.getCombinedSuggestions(
+                    pref.getPreference(), pref.getDietStatus(), pref.getHomeIngredients());
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new HashMap<String, String>() {{
+                put("error", "Failed to get suggestions: " + e.getMessage());
+            }});
+        }
+    }
+
     @PostMapping("/ai/parse-food")
     public ResponseEntity<?> parseFoodText(@RequestBody Map<String, String> request) {
         try {

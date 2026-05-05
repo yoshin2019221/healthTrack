@@ -423,6 +423,38 @@
 
         /* ── SUGGESTIONS PANEL ── */
         .suggestions-panel { display: flex; flex-direction: column; gap: 10px; }
+        .suggestion-section-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--text2);
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            margin: 14px 0 10px;
+        }
+        .suggestion-section-header:first-child { margin-top: 0; }
+        .suggestion-section-icon { font-size: 1rem; }
+        .suggestion-divider {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 18px 0;
+        }
+        .suggestion-divider-line {
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+        .suggestion-divider-label {
+            font-size: 0.72rem;
+            color: var(--text2);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            white-space: nowrap;
+        }
         .suggested-meal {
             padding: 14px 16px;
             background: var(--surface2);
@@ -1582,23 +1614,53 @@
         },
 
         async loadSuggestions() {
+            const panel = document.getElementById('suggestionsPanel');
+            panel.innerHTML = '<div class="empty-state">Loading suggestions...</div>';
             try {
-                let suggestions;
-                if (this.apiKeySet) {
-                    const res = await fetch('/api/ai/suggestions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ input: this.currentPreference }) });
-                    suggestions = await res.json();
-                } else {
-                    const res = await fetch('/api/suggestions');
-                    suggestions = await res.json();
-                }
-                const panel = document.getElementById('suggestionsPanel');
-                if (!suggestions || suggestions.length === 0) { panel.innerHTML = '<div class="empty-state">No suggestions available</div>'; return; }
-                panel.innerHTML = suggestions.map(s => `
-                    <div class="suggested-meal" onclick="app.selectFood('${s.name.replace(/'/g,"\\'")}',${s.calories||300},20,40,10,'serving',1)">
-                        <div class="suggested-meal-name">${s.name}</div>
-                        <div class="suggested-meal-nutrition">🔥 ${Math.round(s.calories||0)} cal${s.description ? ' • ' + s.description : ''}</div>
-                    </div>`).join('');
-            } catch(e) {}
+                const res = await fetch('/api/ai/combined-suggestions');
+                const data = await res.json();
+                this.renderCombinedSuggestions(panel, data);
+            } catch(e) {
+                panel.innerHTML = '<div class="empty-state">Failed to load suggestions</div>';
+            }
+        },
+
+        renderCombinedSuggestions(panel, data) {
+            const ingredientList = data.ingredientBased || [];
+            const generalList = data.general || [];
+            let html = '';
+
+            if (ingredientList.length > 0) {
+                html += `<div class="suggestion-section-header">
+                    <span class="suggestion-section-icon">🥘</span>
+                    <span>Made from your ingredients</span>
+                </div>`;
+                html += ingredientList.map(s => this.mealCardHtml(s)).join('');
+                html += `<div class="suggestion-divider">
+                    <span class="suggestion-divider-line"></span>
+                    <span class="suggestion-divider-label">More Ideas</span>
+                    <span class="suggestion-divider-line"></span>
+                </div>`;
+            }
+
+            if (generalList.length > 0) {
+                html += `<div class="suggestion-section-header">
+                    <span class="suggestion-section-icon">💡</span>
+                    <span>Recommended for you</span>
+                </div>`;
+                html += generalList.map(s => this.mealCardHtml(s)).join('');
+            }
+
+            if (!html) { panel.innerHTML = '<div class="empty-state">No suggestions available</div>'; return; }
+            panel.innerHTML = html;
+        },
+
+        mealCardHtml(s) {
+            const safeName = (s.name || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+            return `<div class="suggested-meal" onclick="app.selectFood('${safeName}',${s.calories||300},20,40,10,'serving',1)">
+                <div class="suggested-meal-name">${s.name || ''}</div>
+                <div class="suggested-meal-nutrition">🔥 ${Math.round(s.calories||0)} cal${s.description ? ' · ' + s.description : ''}</div>
+            </div>`;
         },
 
         getPreferenceEmoji(p) { return {'all':'🍽️','vegetarian':'🥬','vegan':'🌱','highprotein':'💪','lowcarb':'📉'}[p]||'🍽️'; },
@@ -1607,20 +1669,14 @@
 
         async getIngredientBasedSuggestions() {
             const ingredients = document.getElementById('ingredientsInput').value.trim();
+            const panel = document.getElementById('suggestionsPanel');
+            panel.innerHTML = '<div class="empty-state">Generating personalized suggestions... ⏳</div>';
             try {
-                const res = await fetch('/api/ai/ingredient-suggestions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ingredients }) });
-                if (!res.ok) { this.showMessage('Failed to get suggestions', 'error'); return; }
-                const suggestions = await res.json();
-                const panel = document.getElementById('suggestionsPanel');
-                if (!suggestions || suggestions.length === 0) { panel.innerHTML = '<div class="empty-state">No suggestions available</div>'; return; }
-                panel.innerHTML = `<div style="background:linear-gradient(135deg,rgba(124,111,224,0.15),rgba(224,111,160,0.08));border:1px solid rgba(124,111,224,0.2);border-radius:12px;padding:14px;margin-bottom:14px;font-size:0.82em;color:var(--text2);">
-                    <strong style="color:var(--text);">🎯 Personalized for you</strong><br>
-                    ${this.getPreferenceEmoji(this.currentPreference)} ${this.getPreferenceName(this.currentPreference)} • ${ingredients ? '🥘 ' + ingredients : '👨‍🍳 Chef\'s choice'}
-                </div>` + suggestions.map(s => `
-                    <div class="suggested-meal">
-                        <div class="suggested-meal-name">${s.name}</div>
-                        <div class="suggested-meal-nutrition" style="white-space:pre-wrap;">🔥 ${Math.round(s.calories||0)} cal\n${s.description||''}</div>
-                    </div>`).join('');
+                // save ingredients first, then reload combined suggestions
+                await fetch('/api/preference', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ homeIngredients: ingredients }) });
+                const res = await fetch('/api/ai/combined-suggestions');
+                const data = await res.json();
+                this.renderCombinedSuggestions(panel, data);
             } catch(e) { this.showMessage('Failed to generate suggestions', 'error'); }
         },
 
