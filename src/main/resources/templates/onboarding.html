@@ -530,7 +530,7 @@
                 goal: document.querySelector('input[name="goal"]:checked').value,
             };
 
-            fetch('/api/calculate-calories', {
+            authFetch('/api/calculate-calories', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body),
@@ -589,7 +589,17 @@
             `;
         }
 
+        function authFetch(url, options = {}) {
+            const token = localStorage.getItem('authToken');
+            const headers = { 'Content-Type': 'application/json', ...(options.headers || {}), ...(token ? { 'Authorization': 'Bearer ' + token } : {}) };
+            return fetch(url, { ...options, headers }).then(res => {
+                if (res.status === 401) { localStorage.removeItem('authToken'); window.location.href = '/auth'; throw new Error('Unauthorized'); }
+                return res;
+            });
+        }
+
         window.addEventListener('load', () => {
+            if (!localStorage.getItem('authToken')) { window.location.href = '/auth'; return; }
             if (localStorage.getItem('userProfile')) window.location.href = '/';
         });
     </script>

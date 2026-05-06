@@ -9,6 +9,9 @@ public class UserPreference {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "user_id", unique = true)
+    private Long userId;
+
     private String preference;
     private String dietStatus;
     private String homeIngredients;
@@ -30,6 +33,8 @@ public class UserPreference {
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
+    public Long getUserId() { return userId; }
+    public void setUserId(Long userId) { this.userId = userId; }
     public String getPreference() { return preference; }
     public void setPreference(String preference) { this.preference = preference; }
     public String getDietStatus() { return dietStatus; }
